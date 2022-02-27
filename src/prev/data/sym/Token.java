@@ -45,7 +45,7 @@ public class Token extends CommonToken implements Locatable, Loggable {
 			logger.addAttribute("token", "EOF");
 			logger.addAttribute("lexeme", "");
 		} else {
-			logger.addAttribute("token", PrevLexer.ruleNames[getType() - 1]);
+			logger.addAttribute("token", PrevLexer.VOCABULARY.getSymbolicName(getType()));
 			logger.addAttribute("lexeme", getText());
 			location.log(logger);
 		}
