@@ -1,0 +1,153 @@
+#ilegalci:
+#'''
+#'bc'
+#'aaaaaaa
+#⌂
+#0001
+#0123123123
+#"invalid"kjahd"
+#"invalid
+#"""
+
+# vvv tale je sploh dobra :)
+#0while
+
+
+
+(none true false)
+a = x == b;
+
+a
+c
+ado
+adijo
+badijo
+ba_asddasd
+b
+_0aa
++9
+-1
+111
+----
+-1512-
+3333
+
+'c'
+'\''
+'+'
+' '
+id'c'id
+
+
+'a''\'''c'
+
+"string"
+""
+" "
+"  \"  "
+"st\"ring__ asda9s123ijsidfjsdoijfoi[[]{["
+
+
+bool char del do else fun if int new then typ var void where while
+boole chare delete
+
+# comment test sadljhlkdafjfg fdklgjglk sdfdgksfdghgjs zti true false
+
+
+int hello(void test){        tab
+	bool char del do else fun if int new then typ var void where while
+        "this is a fu!"!#komentar od tle napreh!$"$!#%#&//()&)=?? st\"ring"
+		char '\'' ( ) { } [ ] . , : ; & | ! == != < > <= >= * / % + - ^ = 'a'
++214124 -134234324 235352535235
+
+void VOIDID(int INTID)
+{
+	char CHARID = '\'';
+	char cgar = 'h';
+	var string = "sadfsaf\"asdfasf";
+	int integer = 1;
+	int plusinteger = +2;
+	int signedinteger = -23;
+    int pointer = nil;
+    var krneki = none;
+    bool poba = true;
+    bool notPoba = false;
+    if (poba){
+        notPoba = true;
+    } else if (notPoba){
+        notPoba = false;
+    }
+
+    if (notPoba){
+        "asdsadasgsga\"sadasdfdas''"
+    }
+    <===>=.,:&|!
+    !=<>*%+-^
+    "!=<>*%+-^"
+    do while
+    new
+    then
+    typ
+    intwhiledo
+    int fun(char c){
+        sum = 0
+        for(int i = 0; i < 100; i += 1){
+            sum += i;
+        }
+        return sum;
+    }
+}
+
+fun mainFunction(arg1:int, arg2: void, arg3:[2] int) : void
+= {
+    (a : int) = 5;
+    (b : int) = 20;
+    (d : [10] char) = '\'';
+    (c : int) = a * b + b % a - 10;
+    if !a & b | c then {
+        (c : [20] char) = new Blue();
+    } else {
+        print("exit");
+    };
+}
+
+fun print( myString : [20] char) : void = {
+    out(myString);
+}
+
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+a
+b
+c
+d
+e
+f
+g
+h
+i
+j
+kl
+m
+
+"valid" "valid"
+"valid \"lolers\" valid"
+
+
+f"python {baaa] format string {asdasd}"
+
+lule : string = "hahahahahha" + "hahahah" -> 'c'"hahaha""757457"
+
+#tole je pa klasika
+'\'
+
+# konec blodn :D

@@ -1,1 +1,57 @@
-var i:int
+
+# Constants
+
+none    true false
+false  true    none
+
+42   0   234   234
+   234234
+
+   999023
+
+' '    '~'   '\''   'a'   'e'  42 
+'\' hello while '\'' what 24
+
+# Symbols
+= (6 - 2, 2 + 1) != (7 / 2 % 4  ,    7 * 3);
+{  "key": 42, "value": [ ...['d'],  'a',   'b', 'c' ]}
+2 & 4^2 | 3
+!false
+true == true
+5 < 8 > 6
+5 <= 5
+7 >= 7
+
+
+# Keywords
+var i:int = 42;
+bool state = false;
+char c = getchar();
+int *pa = new int;
+del pa;
+
+if (state == true) do {
+    "something"; 
+} else then {
+    void fun a(int b) {
+        b = 1;
+    }
+
+    where b = 0
+    while(!true) {}
+}
+
+typ a = int
+
+
+# Identifiers
+hello = "Hello world";
+something = hello + "!";
+i = 3;
+_hidden = 'a'; lol101 = 42;
+while = "wrong!!!";
+_ = 36;
+_5023hello = "wrong!!!l";
+42 = "what will happen?";
+
+
