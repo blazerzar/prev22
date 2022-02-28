@@ -24,7 +24,8 @@ CONST_INT_ERR : '0'[0-9]+ {
     int col = getCharPositionInLine() - text.length() + 1;
     if (true) throw new Report.Error(
         getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Integer constants with leading zeros are not allowed.");
+        "Integer constants with leading zeros are not allowed."
+    );
 } ;
 
 CONST_CHAR : '\'' CHAR_CHAR '\'' ;
@@ -34,7 +35,8 @@ CONST_CHAR_UNCLOSED : '\'' UNESCAPED_CHAR+  ~['\n\r] {
     int col = getCharPositionInLine() - text.length() + 1;
     if (true) throw new Report.Error(
         getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Unclosed character constant.");
+        "Unclosed character constant."
+    );
 } ;
 CONST_CHAR_ERR : '\'' UNESCAPED_CHAR UNESCAPED_CHAR+ '\'' {
     String text = getText();
@@ -42,7 +44,8 @@ CONST_CHAR_ERR : '\'' UNESCAPED_CHAR UNESCAPED_CHAR+ '\'' {
     int col = getCharPositionInLine() - text.length() + 1;
     if (true) throw new Report.Error(
         getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Invalid character constant.");
+        "Invalid character constant."
+    );
 } ;
 CONST_CHAR_EMPTY : '\'\'' {
     String text = getText();
@@ -50,7 +53,8 @@ CONST_CHAR_EMPTY : '\'\'' {
     int col = getCharPositionInLine() - text.length() + 1;
     if (true) throw new Report.Error(
         getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Empty character constant.");
+        "Empty character constant."
+    );
 } ;
 
 CONST_STR : '"' STR_CHAR* '"' ;
@@ -60,7 +64,8 @@ CONST_STR_UNCLOSED : '"' STR_CHAR* {
     int col = getCharPositionInLine() - text.length() + 1;
     if (true) throw new Report.Error(
         getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Unclosed string constant.");
+        "Unclosed string constant."
+    );
 } ; 
 
 CONST_PTR : 'nil' ;
@@ -118,7 +123,8 @@ ID_ERR : [0-9][a-zA-Z_0-9]* {
     int col = getCharPositionInLine() - text.length() + 1;
     if (true) throw new Report.Error(
         getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Identifiers cannot start with a number.");
+        "Identifiers cannot start with a number."
+    );
 } ;
 
 /* Comments and white space */
@@ -131,7 +137,8 @@ UNRECOGNIZED : . {
     int col = getCharPositionInLine() - text.length() + 1;
     if (true) throw new Report.Error(
         getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Unrecognized symbol.");
+        "Unrecognized symbol."
+    );
 } ;
 
 fragment CHAR_CHAR : UNESCAPED_CHAR | '\\\'' ; 
