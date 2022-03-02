@@ -22,9 +22,9 @@ CONST_INT_ERR : '0'[0-9]+ {
     String text = getText();
     int line = getLine();
     int col = getCharPositionInLine() - text.length() + 1;
+    Location l = new Location(line, col);
     if (true) throw new Report.Error(
-        getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Integer constants with leading zeros are not allowed."
+        l, text + " : Integer constants with leading zeros not allowed"
     );
 } ;
 
@@ -33,27 +33,27 @@ CONST_CHAR_UNCLOSED : '\'' UNESCAPED_CHAR+  ~['\n\r] {
     String text = getText();
     int line = getLine();
     int col = getCharPositionInLine() - text.length() + 1;
+    Location l = new Location(line, col);
     if (true) throw new Report.Error(
-        getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Unclosed character constant."
+        l, text + " : Unclosed character constant"
     );
 } ;
 CONST_CHAR_ERR : '\'' UNESCAPED_CHAR UNESCAPED_CHAR+ '\'' {
     String text = getText();
     int line = getLine();
     int col = getCharPositionInLine() - text.length() + 1;
+    Location l = new Location(line, col);
     if (true) throw new Report.Error(
-        getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Invalid character constant."
+        l, text + " : Invalid character constant"
     );
 } ;
 CONST_CHAR_EMPTY : '\'\'' {
     String text = getText();
     int line = getLine();
     int col = getCharPositionInLine() - text.length() + 1;
+    Location l = new Location(line, col);
     if (true) throw new Report.Error(
-        getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Empty character constant."
+        l, text + " : Empty character constant"
     );
 } ;
 
@@ -62,9 +62,9 @@ CONST_STR_UNCLOSED : '"' STR_CHAR* {
     String text = getText();
     int line = getLine();
     int col = getCharPositionInLine() - text.length() + 1;
+    Location l = new Location(line, col);
     if (true) throw new Report.Error(
-        getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Unclosed string constant."
+        l, text + " : Unclosed string constant"
     );
 } ; 
 
@@ -121,9 +121,9 @@ ID_ERR : [0-9][a-zA-Z_0-9]* {
     String text = getText();
     int line = getLine();
     int col = getCharPositionInLine() - text.length() + 1;
+    Location l = new Location(line, col);
     if (true) throw new Report.Error(
-        getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Identifiers cannot start with a number."
+        l, text + " : Identifiers cannot start with a number"
     );
 } ;
 
@@ -135,9 +135,9 @@ UNRECOGNIZED : . {
     String text = getText();
     int line = getLine();
     int col = getCharPositionInLine() - text.length() + 1;
+    Location l = new Location(line, col);
     if (true) throw new Report.Error(
-        getSourceName() + ":" + line + ":" + col + ": " + text + "\n    " + 
-        "Unrecognized symbol."
+        l, text + " : Unexpected symbol"
     );
 } ;
 
