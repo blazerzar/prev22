@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.*;
 
 import prev.common.report.*;
 import prev.phase.lexan.*;
+import prev.phase.synan.*;
 
 /**
  * The compiler.
@@ -15,7 +16,7 @@ public class Compiler {
 	// COMMAND LINE ARGUMENTS
 
 	/** All valid phases of the compiler. */
-	private static final String phases = "none|lexan";
+	private static final String phases = "none|lexan|synan";
 
 	/** Values of command line arguments. */
 	private static HashMap<String, String> cmdLine = new HashMap<String, String>();
@@ -112,6 +113,14 @@ public class Compiler {
 						}
 						break;
 					}
+
+				// Syntax analysis.
+				try (LexAn lexan = new LexAn(); SynAn synan = new SynAn(lexan)) {
+					SynAn.tree = synan.parser.source();
+					synan.log(SynAn.tree);
+				}
+				if (Compiler.cmdLineArgValue("--target-phase").equals("synan"))
+					break;
 
 			}
 
