@@ -1,12 +1,17 @@
 
+# Tests with tabs
+	_42test 
+	_42test 		  1001234 "test"
+#var type hello while  	int  	42test	 "test"
 # Constants
-# 0012
+#0012
 
 none    true false
 false  true    none
 
 42   0   234   234
    234234
+
 
    999023
 

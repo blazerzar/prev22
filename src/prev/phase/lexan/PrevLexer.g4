@@ -129,7 +129,11 @@ ID_ERR : [0-9][a-zA-Z_0-9]* {
 
 /* Comments and white space */
 COMMENT : '#' ~[\r\n]* ;
-WS : [ \t\n\r]+ -> skip ;
+TAB : '\t' {
+    setCharPositionInLine(getCharPositionInLine() + 7);
+} -> skip;
+WS : [ \n\r]+ -> skip ;
+
 
 UNRECOGNIZED : . {
     String text = getText();
