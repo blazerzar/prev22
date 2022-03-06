@@ -1,0 +1,16 @@
+fun mainFunction(arg1:int, arg2: void, arg3:[2] int) : void
+= {
+    (a : int) = 5;
+    (b : int) = 20;
+    (d : [10] char) = '\'';
+    (c : int) = a * b + b % a - 10;
+    if !a & b | c then {
+        (c : [20] char) = new Blue();
+    } else {
+        print("exit");
+    };
+}
+
+fun print( myString : [20] char) : void = {
+    out(myString);
+}

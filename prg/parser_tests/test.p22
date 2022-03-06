@@ -1,0 +1,41 @@
+var P: int
+
+fun F0(f0_x: int, f0_y: int): int = { 0 where {
+    var f0_a: char
+
+    fun F1(f1_x: ^([10]int)): int = {
+
+        0 where {
+            fun F2(): int = { 0 where {
+                fun F3(f3_x: int, f3_y: char, f3_z: ^int): int = {
+                    F3(f1_a, f0_a, ^P);
+                    F1(^R);
+                }
+            };}
+
+            var f1_a: int
+        };
+    }
+
+    var f0_b: int
+
+    fun H1(h1_x: int): int = {
+        0 where {
+            fun H2(): int
+        };
+        G0();
+    }
+
+    var f0_c: bool
+};}
+
+var Q: bool
+
+fun G0(): int = {
+    F0(R[1], P);
+    0 where {
+        fun G1(g1_x: int, g1_y: int): int
+    };
+}
+
+var R: [10]int

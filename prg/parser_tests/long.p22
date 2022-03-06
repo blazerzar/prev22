@@ -1,0 +1,27 @@
+typ iden = { k : x, z : void}
+var test123 : ^x
+
+fun main() : int =
+ {
+    while i < 10 do
+        x = i + 1;
+
+    test123 = (x & y);
+
+    yy = id(12);
+    xx = id();
+    zz = id(12, 10);
+
+    z where {
+        var z : int
+    };
+
+    new z[(10 : [10] void)];
+
+    if x
+    then 30 = 30
+    else !x = { test123(x + 1, 1) = (i % 10); (10 : ({ yy : ^void})); };
+ }
+
+
+

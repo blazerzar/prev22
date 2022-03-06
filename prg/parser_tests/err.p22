@@ -1,0 +1,2 @@
+fun fun () : void #this line needs to throw error and exit
+= correct + here

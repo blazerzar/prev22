@@ -1,0 +1,5 @@
+fun funkcija(param : int) : void = h where {
+	var j : h
+}
+
+fun j() : int = -12345 + 10 * 3 % 12 / 10 < a[10 + 2]

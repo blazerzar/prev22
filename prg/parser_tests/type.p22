@@ -1,0 +1,11 @@
+typ typid = void
+typ typid = char
+typ typid = int
+typ typid = bool
+typ typid = id
+typ typid = [1]void
+typ typid = ^void
+typ typid = {id1 : void}
+typ typid = { id1 : void, id1 : void, id2 : void}
+typ typid = { id1 : void, id2: void}
+typ typid = (void)  

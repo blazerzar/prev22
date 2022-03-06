@@ -1,0 +1,4 @@
+fun i() : int = {
+	stmt = 2;
+	if a < b then c else d;
+}

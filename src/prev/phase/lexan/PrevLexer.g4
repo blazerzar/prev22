@@ -128,12 +128,11 @@ ID_ERR : [0-9][a-zA-Z_0-9]* {
 } ;
 
 /* Comments and white space */
-COMMENT : '#' ~[\r\n]* ;
+COMMENT : '#' ~[\r\n]* -> skip ;
 TAB : '\t' {
     setCharPositionInLine(getCharPositionInLine() + 7);
 } -> skip;
 WS : [ \n\r]+ -> skip ;
-
 
 UNRECOGNIZED : . {
     String text = getText();

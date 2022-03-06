@@ -1,0 +1,45 @@
+fun f () : h = +1
+fun a() : void = -1
+fun a() : void = 1
+fun a() : void = 24823709579243573453270250853272357853278325235
+fun a() : void = 'a'
+fun a() : void = '\''
+fun a() : void = ""
+fun a() : void = "fgfhfgh\"gdfdfh"
+fun a() : void = "gsgfsgdgsddsggds"
+fun a() : void = true
+fun a() : void = false
+fun a() : void = none
+fun a() : void = nil
+#
+fun a() : void = id
+fun a() : void = call()
+fun a() : void = call(1)
+fun a() : void = call(1,1)
+fun a() : void = call(1,1,call(call(2)))
+fun a() : void = new h
+fun a() : void = del h
+fun a() : void = {statement;}
+fun a() : void = (h : void)
+fun a() : void = (expression)
+fun a() : void = 1 & 1
+fun a() : void = 1 | 1
+fun a() : void = 1 == 1
+fun a() : void = 1 != 1
+fun a() : void = 1 < 1
+fun a() : void = 1 > 1
+fun a() : void = 1 <= 1
+fun a() : void = 1 >= 1
+fun a() : void = 1 * 1
+fun a() : void = 1 / 1
+fun a() : void = 1 % 1
+fun a() : void = 1 + 1
+fun a() : void = 1 - 1
+fun a() : void = !true
+fun a() : void = ^h
+fun a() : void = sth[1]
+fun a() : void = sth^
+fun a() : void = sth.val
+fun a() : void = sth where {var h : h}
+fun a() : void = sth where {var h : h typ t = t }
+fun a() : void = sth where {var h : h typ t = t fun f () : void = 1}

@@ -1,0 +1,9 @@
+fun main() : void = {
+    n = 2;
+    rec();
+} where {
+    var n : int
+    fun rec() : void = {
+       if n > 0 then { n = n - 1; rec(); } else none;
+    }
+}

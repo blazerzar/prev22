@@ -1,0 +1,10 @@
+typ id = void
+var id : void
+fun id () : void = 1
+fun id (id1 : t1) : int = 1
+fun id (id1 : t1, id2 : t2) : int = 1
+fun id (id1 : t1, id2 : t2, id3 : t3) : int = 1
+
+fun id () : char = 'a'
+fun id () : void = 1
+typ t = t

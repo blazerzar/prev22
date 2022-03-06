@@ -1,0 +1,7 @@
+fun f () : void
+= {
+    expression;
+    expr = expr;
+    if expr then stmt else stmt;
+    while expr do stmt;
+}

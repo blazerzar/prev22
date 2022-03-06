@@ -4,6 +4,7 @@ prg/*.xml
 prg/*.html
 
 PrevLexer.java
-PrevLexer.interp
-PrevLexer.tokens
+PrevParser.java
+*.interp
+*.tokens
 
