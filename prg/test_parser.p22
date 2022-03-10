@@ -1,15 +1,21 @@
 # Declarations
 typ stevilo = int
-var i : stevilo
-var j : bool
+typ stevilo_ptr = ^stevilo
+typ person = {  	name : ^char, age   	 : stevilo }
 # typ stevilo = 42
-# var while : int
 # typ if = bool
+# typ empty = { }
 
-# Functions
+var i :   	stevilo
+var j : bool
+var bostjan : oseba
+# var while : int
+
 fun compute() : void
-fun sum(a : int, b : int) : int
-    = a + b
+fun sum(a : int, b : { val : int }) : int
+    = a + b.val
+fun f(a : bool) : bool
+    = 2 - 5 * 7 % 2 - 2 < 1 | 5 & 42
 # fun fun() : void
 # fun ill_return() : 42
 # fun comma(a : bool test : char) : void
@@ -22,13 +28,13 @@ typ _ = char
 typ _ = int
 typ _ = bool
 
-typ _ = stevilo 
+typ _ = stevilo
 typ _ = [3 - 5 * 2] char
 typ _ = [2][2][2]^char
-# typ _ = [3 * unclosed void
 typ _ = ^stevilo
 typ _ = { name : ^char, age : int, student : bool }
 typ _ = (stevilo)
+# typ _ = [3 * unclosed void
 
 fun main() : void = {
     # Expressions
@@ -43,7 +49,7 @@ fun main() : void = {
     arr[5 + 3]^.name;
     # arr[3 * unclosed;
     5 + 2 * 3 % 2 - 6 / (a | false & true) where {
-        var a : int 
+        var a : int
     } where {
         var b : bool
     };
@@ -51,6 +57,10 @@ fun main() : void = {
     true & true & true & true;
     5 * 5 * 5 * 5;
     4 - 4 - 3 - 2;
+
+    a where {
+        var a : int
+    };
 
     5 + 3 != 2 * 4 where { typ tmp = int };
 
@@ -60,17 +70,20 @@ fun main() : void = {
 
     # Statements
     i = 42;
-    if test(i) then
+    if test() then
         i = 3
     else {
         i = 4;
         j = true;
     };
 
+    while true != true do {
+        a = 31459;
+    };
+
     while i < 5 & j == true do  {
         a = 5 where { var a : int };
     };
-    
 }
 
 # fun test() : void = {}
