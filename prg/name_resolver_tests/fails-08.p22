@@ -1,0 +1,45 @@
+
+typ Person = {
+  name : ^char,
+  lastname : ^char,
+  age : int,
+  pet : Dog
+}
+
+typ Dog = {
+  weight : int
+}
+
+fun constructDog(weight:int) : Dog = {
+  doge.weight = weight;
+  doge;
+} where {
+  var doge : Dog
+}
+
+fun constructMe(ime:^char, priimek:^char, starost:int) : Person = {
+  # Tukaj je pomemebno da pravilno poveze spremenljivko me
+  # ter parametre funkcije
+  # + se ignorira preverjanje .name , .age in .lastname
+  me.name = ime;
+  me.lastname = priimek;
+  me.age = starost;
+
+  # Vprasljivo ce bo to kasneje pravilno
+  me.pet = constructDog(100);
+
+  doge.height = 121;
+  # Za prihodnost (bi mogu bit error)
+  # me.pet = doge
+  
+  me;
+} where {
+  var me : Person
+  var doge : Dog
+  typ Dog = {
+    height : int
+  }
+  typ Dog = {
+    visina : char
+  }
+}

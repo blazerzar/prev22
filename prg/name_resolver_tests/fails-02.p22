@@ -1,0 +1,5 @@
+
+fun main():int = {
+  printMeMaybe("Hello, world.");
+  0;
+}

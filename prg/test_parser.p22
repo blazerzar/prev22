@@ -8,7 +8,7 @@ typ person = {  	name : ^char, age   	 : stevilo }
 
 var i :   	stevilo
 var j : bool
-var bostjan : oseba
+var bostjan : person
 # var while : int
 
 fun compute() : void
@@ -23,17 +23,17 @@ fun f(a : bool) : bool
 # fun test(a : int, b : int : void
 
 # Types
-typ _ = void
-typ _ = char
-typ _ = int
-typ _ = bool
+typ vv = void
+typ cc = char
+typ ii = int
+typ bb = bool
 
-typ _ = stevilo
-typ _ = [3 - 5 * 2] char
-typ _ = [2][2][2]^char
-typ _ = ^stevilo
-typ _ = { name : ^char, age : int, student : bool }
-typ _ = (stevilo)
+typ ss = stevilo
+typ ccc = [3 - 5 * 2] char
+typ ccp = [2][2][2]^char
+typ ssp = ^stevilo
+typ recc = { name : ^char, age : int, student : bool }
+typ ccccc = (stevilo)
 # typ _ = [3 * unclosed void
 
 fun main() : void = {

@@ -1,0 +1,15 @@
+
+typ Person = {
+  name : ^char,
+  lastname : ^char,
+  age : int
+}
+
+fun constructMe(ime:^char, priimek:^char, priimek:void, starost:int) : Person = {
+  me.name = ime;
+  me.lastname = priimek;
+  me.age = starost;
+  me;
+} where {
+  var me : Person
+}

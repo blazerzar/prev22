@@ -1,0 +1,24 @@
+var i:int
+var x:int
+typ tipck = int
+
+fun f(x : tipck) : void = {
+	i = i + 1;
+	i = f() + x;
+
+	f(x + 1) - g(f(y - x))
+	where {
+		var x:int
+		fun f(t : int) : int = g(t) + 1
+		var y:int
+		fun g(h : int) : int = g(h) - f(h + 1)
+	};
+
+	#h = 0; 	# error, not visible here
+
+	x = x + 1; 	# x param, ne zunanji x
+}
+
+#fun g(y : zmankal) : void # error, ne obstaja tip
+
+#var x:int  	# error, already defined

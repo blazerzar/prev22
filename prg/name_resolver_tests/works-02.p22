@@ -1,0 +1,42 @@
+
+var seed : int
+
+
+fun rng() : int = {
+  intermediate = 65539 * seed;
+  seed = intermediate % 2147483648;
+  seed;
+} where {
+  var intermediate : int
+}
+
+fun printf(msg:^char) : void
+fun intToString(val:int) : ^char
+
+fun main() : int = {
+  seed = 1337;
+  {
+    x = 5;
+    
+    {
+      x = rng();
+      printf(intToString(x));
+    } where {
+      var x : int
+    };
+
+    x = 7;
+
+    {
+      x = rng();
+      printf(intToString(x));
+    } where {
+      var x : int
+    };
+  } where {
+    var x : int
+    fun printf(msg:^char) : void
+  };
+  printf("Hi mom");
+  seed;
+}
