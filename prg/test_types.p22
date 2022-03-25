@@ -1,0 +1,51 @@
+# ----- 
+# TYPES
+# -----
+
+# Atom types
+typ crna_lukna = void
+typ znak = char
+typ stevilo = int
+typ pravilnosti = bool
+
+# Array types
+typ tabela_znakov = [+42]char
+typ tabela_rec = [2]{ a : int, b : ^char }
+# Array errors
+# typ prazna_tabela = [0]bool
+# typ non_const_size = [5 + 3]char
+# typ negativna_velikost = [-42]bool
+# typ prevelika_tabela = [123412341241231241212344]char
+# typ neki = ["helo"]char
+# typ void_tabela = [5]void
+# typ tabela_void = [+42]crna_lukna
+# typ is_it_void = [1]crna_lukna2 
+
+# Ptr types
+typ kazalec_na_kazalec = ^^char
+typ kazalec_na_tabelo_kazalcev = ^[42]^bool
+
+# Record types
+typ osebek = oseba
+typ oseba = { ime: ^char, priimek : ^char, starost : int }
+typ Node = { value : int, left : ^Node, right : ^Node }
+# Record errors
+# typ oseba_void = { ime: ^char, priimek : crna_lukna2 }
+# typ void_record = { empty : void }
+# typ redeclared = { a : int, c: bool, a : char }
+# typ cyclic = { a : cyclic2 } typ cyclic2 = cyclic
+
+typ crna_lukna2 = crna_lukna
+var bostjan : oseba
+
+# Name types
+typ integer = stevilo
+typ personel = ^person
+typ person = oseba
+typ stevilo1 = stevilo2
+typ stevilo2 = ^stevilo1
+# Name errors
+# typ type1 = type2 typ type2 = type3 typ type3 = type1
+# typ guy = bostjan
+
+
