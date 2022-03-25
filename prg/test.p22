@@ -1,25 +1,3 @@
 typ stevilo = int
-typ beseda = [42]char
-var age : stevilo
-
-var b : beseda
-
-fun test(a : int, b : { val : int }) : beseda = b.val
-
-var table : [48]int
-
-fun main() : int = {
-    table[0] = 42;    
-    table[0] = 43;    
-    table[0] = 44;    
-
-     
-}
-
-var curr : int
-
-fun partition(array : ^int, i : int, j : int) : void = {
-    0;
-}
-
-
+typ integer = stevilo
+var i : stevilo

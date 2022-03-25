@@ -45,7 +45,8 @@
 					return includesType(type, semanticName.type());
 				}
 			} else if (tree instanceof SemPtr) {
-				// Pointers break the cycle
+				// Pointers in records break the cycle
+				// return includesType(type, ((SemPtr) tree).baseType);
 				return false;
 			} else if (tree instanceof SemRec) {
 				SemRec rec = (SemRec) tree;
@@ -65,14 +66,14 @@
 		public SemType visit(AstTrees<? extends AstTree> trees, Mode mode) {
 			// Add type declarations to the dictionary
 			for (AstTree t : trees) {
-				if (t instanceof AstDecl) {
+				if (t instanceof AstTypeDecl) {
 					t.accept(this, Mode.HEAD);
 				}
 			}
 
 			// Resolve type declarations
 			for (AstTree t : trees) {
-				if (t instanceof AstDecl) {
+				if (t instanceof AstTypeDecl) {
 					t.accept(this, Mode.BODY);
 				}
 			}
@@ -103,10 +104,26 @@
 				}
 			}
 
-			// TODO: Variables
+			// Variables
+			for (AstTree t : trees) {
+				if (t instanceof AstVarDecl) {
+					t.accept(this, null);
+				}
+			}
 
-			// TODO: Functions
+			// Check functions parameters and return types
+			for (AstTree t : trees) {
+				if (t instanceof AstFunDecl) {
+					t.accept(this, Mode.HEAD);
+				}
+			}
 
+			// Type check function body
+			for (AstTree t : trees) {
+				if (t instanceof AstFunDecl) {
+					t.accept(this, Mode.BODY);
+				}
+			}
 
 			return null;
 		}
@@ -212,10 +229,12 @@
 
 		@Override
 		public SemType visit(AstNameType nameType, Mode mode) {
+			// System.out.println(nameType.name);
 			AstDecl typeDecl = SemAn.declaredAt.get(nameType);
 			if (typeDecl instanceof AstTypeDecl) {
 				SemType type = SemAn.declaresType.get((AstTypeDecl) typeDecl);
 				SemAn.isType.put(nameType, type);
+				// System.out.println("hello");
 				return type;
 			} else {
 				throw new Report.Error(nameType,
@@ -236,6 +255,7 @@
 				case CHAR    -> new SemChar();
 				case INT     -> new SemInt();
 			};
+			System.out.println("testing");
 			SemAn.ofType.put(atomExpr, type);
 			return type;
 		}
@@ -320,7 +340,8 @@
 				type.define(typeDecl.type.accept(this, mode));
 				return type;
 			} else if (mode == Mode.CYCLE_CHECK) {
-				if (includesType(typeDecl.name,
+				if (includesType(
+						typeDecl.name,
 						SemAn.declaresType.get(typeDecl).type())) {
 					throw new Report.Error(typeDecl,
 						typeDecl.name + " : Cyclic type not allowed");
@@ -330,19 +351,60 @@
 			return null;
 		}
 
+		// D2
+		@Override
+		public SemType visit(AstVarDecl varDecl, Mode mode) {
+			// Get type and make sure it is not void
+			SemType type = varDecl.type.accept(this, mode);
+			if (type.actualType() instanceof SemVoid) {
+				throw new Report.Error(varDecl,
+					varDecl.name + " : Void variable type not allowed");
+			}
+
+			return null;
+		}
+
+		// D3, D4
+
 		@Override
 		public SemType visit(AstFunDecl funDecl, Mode mode) {
+			if (mode == Mode.HEAD) {
+				// Type check parameters if present
+				if (funDecl.pars != null) {
+					for (AstParDecl par : funDecl.pars) {
+						par.accept(this, mode);
+					}
+				}
+
+				// Type check return type
+				SemType type = funDecl.type.accept(this, mode).actualType();
+				// Allowed return types are void, bool, char, int and ptr
+				if (type instanceof SemVoid || type instanceof SemBool ||
+						type instanceof SemChar || type instanceof SemInt ||
+						type instanceof SemPtr) {
+					return null;
+				}
+
+				throw new Report.Error(funDecl,
+					funDecl.name + " : Illegal function return type");
+			} else if (mode == Mode.BODY) {
+				// Type check expression if present
+			}
+
 			return null;
 		}
 
 		@Override
 		public SemType visit(AstParDecl parDecl, Mode mode) {
-			return null;
-		}
+			// Allowed types are bool, char, int and ptr
+			SemType type = parDecl.type.accept(this, mode).actualType();
+			if (type instanceof SemBool || type instanceof SemChar ||
+					type instanceof SemInt || type instanceof SemPtr) {
+				return type;
+			}
 
-		@Override
-		public SemType visit(AstVarDecl varDectypl, Mode mode) {
-			return null;
+			throw new Report.Error(parDecl,
+				parDecl.name + " : Illegal parameter type");
 		}
 
 	}

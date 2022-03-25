@@ -35,8 +35,6 @@ typ Node = { value : int, left : ^Node, right : ^Node }
 # typ redeclared = { a : int, c: bool, a : char }
 # typ cyclic = { a : cyclic2 } typ cyclic2 = cyclic
 
-typ crna_lukna2 = crna_lukna
-var bostjan : oseba
 
 # Name types
 typ integer = stevilo
@@ -47,5 +45,47 @@ typ stevilo2 = ^stevilo1
 # Name errors
 # typ type1 = type2 typ type2 = type3 typ type3 = type1
 # typ guy = bostjan
+
+# ---------
+# VARIABLES
+# ---------
+var i : int
+var j : stevilo
+var bostjan : oseba
+var osebe : [+10]person
+# Variable errors
+# var void_var : void
+# var void_var2 : crna_lukna2
+# var type_expected : bostjan
+# var type_notdeclared : oseba__
+
+typ crna_lukna2 = crna_lukna
+
+# ---------
+# FUNCTIONS
+# ---------
+fun f() : void
+fun g(a : int) : int
+fun void_ret() : crna_lukna2
+fun visina_osebe(os : ^oseba) : stevilo
+# Function errors
+# fun ill_return() : oseba
+# fun ill_par(os : oseba) : int
+
+# -----------
+# EXPRESSIONS
+# -----------
+fun expr_test() : void = {
+    none;    
+    nil;
+    "Hello world!";
+    true;
+    false;
+    'h';
+    42;
+    !true;
+    +42;
+    -42;
+}
 
 
