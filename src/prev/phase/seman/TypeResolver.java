@@ -23,26 +23,30 @@
 		List<AstArrType> arrTypes = new LinkedList<>();
 		List<AstRecType> recTypes = new LinkedList<>();
 
+		// To get component names for records
+		Map<SemType, AstRecType> recCompNames = new HashMap<>();
+
 		public enum Mode {
 			HEAD, BODY, CYCLE_CHECK
 		}
 
 		/**
-		*  Return true if [tree] includes [type] in its definition tree
-		*  unless this is the top most node.
+		*  Return true if [tree] includes any of [types] in its definition
+		*  tree unless this is the top most node.
 		*/
-		public boolean includesType(String type, SemType tree) {
+		public boolean includesType(Set<String> types, SemType tree) {
 			if (tree instanceof SemArr) {
-				return includesType(type, ((SemArr) tree).elemType);
+				return includesType(types, ((SemArr) tree).elemType);
 			} else if (tree instanceof SemBool || tree instanceof SemChar ||
 					tree instanceof SemInt || tree instanceof SemVoid) {
 				return false;
 			} else if (tree instanceof SemName) {
 				SemName semanticName = (SemName) tree;
-				if (type.equals(semanticName.name)) {
+				if (types.contains(semanticName.name)) {
 					return true;
 				} else {
-					return includesType(type, semanticName.type());
+					types.add(semanticName.name);
+					return includesType(types, semanticName.type());
 				}
 			} else if (tree instanceof SemPtr) {
 				// Pointers in records break the cycle
@@ -51,12 +55,49 @@
 			} else if (tree instanceof SemRec) {
 				SemRec rec = (SemRec) tree;
 				for (int i = 0; i < rec.numComps(); ++i) {
-					if (includesType(type, rec.compType(i))) {
+					if (includesType(types, rec.compType(i))) {
 						return true;
 					}
 				}
 			}
+			return false;
+		}
 
+		/**
+		 * Return true if both classes represent the same type.
+		 */
+		public boolean sameType(SemType a, SemType b) {
+			// TODO: Check for cycles
+			a = a.actualType();
+			b = b.actualType();
+
+			if (a instanceof SemArr && b instanceof SemArr) {
+				SemArr aa = (SemArr) a;
+				SemArr bb = (SemArr) b;
+				return aa.numElems == bb.numElems &&
+					sameType(aa.elemType, bb.elemType);
+			} else if (a instanceof SemBool && b instanceof SemBool ||
+					a instanceof SemChar && b instanceof SemChar ||
+					a instanceof SemInt && b instanceof SemInt ||
+					a instanceof SemVoid && b instanceof SemVoid) {
+				return true;
+			} else if (a instanceof SemPtr && b instanceof SemPtr) {
+				SemPtr aa = (SemPtr) a;
+				SemPtr bb = (SemPtr) b;
+				return sameType(aa.baseType, bb.baseType);
+			} else if (a instanceof SemRec && b instanceof SemRec) {
+				SemRec aa = (SemRec) a;
+				SemRec bb = (SemRec) b;
+				if (aa.numComps() != bb.numComps()) return false;
+
+				for (int i = 0; i < aa.numComps(); ++i) {
+					if (!sameType(aa.compType(i), bb.compType(i))) {
+						return false;
+					}
+				}
+
+				return true;
+			}
 			return false;
 		}
 
@@ -126,6 +167,7 @@
 			}
 
 			return null;
+
 		}
 
 		// TYPES
@@ -214,6 +256,7 @@
 			SemType type = new SemRec(compTypes);
 			SemAn.isType.put(recType, type);
 			recTypes.add(recType);
+			recCompNames.put(type, recType);
 			return type;
 		}
 
@@ -229,7 +272,6 @@
 
 		@Override
 		public SemType visit(AstNameType nameType, Mode mode) {
-			// System.out.println(nameType.name);
 			AstDecl typeDecl = SemAn.declaredAt.get(nameType);
 			if (typeDecl instanceof AstTypeDecl) {
 				SemType type = SemAn.declaresType.get((AstTypeDecl) typeDecl);
@@ -243,6 +285,44 @@
 		}
 
 		// VALUE EXPRESSIONS
+
+		@Override
+		public SemType visit(AstNameExpr nameExpr, Mode mode) {
+			AstDecl decl = SemAn.declaredAt.get(nameExpr);
+			SemType type = null;
+
+			// Variable access
+			if (decl instanceof AstVarDecl) {
+				AstVarDecl varDecl = (AstVarDecl) decl;
+				type = SemAn.isType.get(varDecl.type);
+			}
+
+			// Parameter access
+			if (decl instanceof AstParDecl) {
+				AstParDecl parDecl = (AstParDecl) decl;
+				type = SemAn.isType.get(parDecl.type);
+			}
+
+			// Parameterless function call
+			if (decl instanceof AstFunDecl) {
+				AstFunDecl funDecl = (AstFunDecl) decl;
+				// Check if function actually takes no arguments
+				if (funDecl.pars != null) {
+					throw new Report.Error(nameExpr,
+						nameExpr.name + " : Incorrect number of arguments provided");
+				}
+				type = SemAn.isType.get(funDecl.type);
+			}
+
+
+			if (type == null) {
+				throw new Report.Error(nameExpr,
+						nameExpr.name + " : Expression expected");
+			}
+
+			SemAn.ofType.put(nameExpr, type);
+			return type;
+		}
 
 		// V1, V2
 		@Override
@@ -317,6 +397,297 @@
 			return type;
 		}
 
+		// V4, V5, V6, V7
+		@Override
+		public SemType visit(AstBinExpr binExpr, Mode mode) {
+			SemType lhs = binExpr.fstExpr.accept(this, mode).actualType();
+			SemType rhs = binExpr.sndExpr.accept(this, mode).actualType();
+
+			SemType type = switch (binExpr.oper) {
+				// V4
+				case AND, OR -> {
+					if (lhs instanceof SemBool && rhs instanceof SemBool) {
+						yield new SemBool();
+					}
+
+					throw new Report.Error(binExpr,
+						"Boolean operands required");
+				}
+
+				// V5
+				case ADD, SUB, MUL, DIV, MOD -> {
+					if (lhs instanceof SemInt && rhs instanceof SemInt) {
+						yield new SemInt();
+					}
+
+					throw new Report.Error(binExpr,
+						"Integer operands required");
+				}
+
+				// V6
+				case EQU, NEQ -> {
+					if (!sameType(lhs, rhs)) {
+						throw new Report.Error(binExpr,
+							"Cannot compare different types");
+					}
+
+					if (lhs instanceof SemBool && rhs instanceof SemBool ||
+							lhs instanceof SemChar && rhs instanceof SemChar ||
+							lhs instanceof SemInt && rhs instanceof SemInt ||
+							lhs instanceof SemPtr && rhs instanceof SemPtr) {
+						yield new SemBool();
+					}
+
+					throw new Report.Error(binExpr,
+						"Can only compare boolean, character, integer and pointer operands");
+				}
+
+				// V7
+				case LEQ, GEQ, LTH, GTH -> {
+					if (!sameType(lhs, rhs)) {
+						throw new Report.Error(binExpr,
+							"Cannot compare different types");
+					}
+
+					if (lhs instanceof SemChar && rhs instanceof SemChar ||
+							lhs instanceof SemInt && rhs instanceof SemInt ||
+							lhs instanceof SemPtr && rhs instanceof SemPtr) {
+						yield new SemBool();
+					}
+
+					throw new Report.Error(binExpr,
+						"Can only relationally compare character, integer and pointer operands");
+				}
+			};
+
+			SemAn.ofType.put(binExpr, type);
+			return type;
+		}
+
+		// V8 (part 2)
+		@Override
+		public SemType visit(AstSfxExpr sfxExpr, Mode mode) {
+			// Expression needs to be a pointer so we can dereference it
+			SemType type = sfxExpr.expr.accept(this, mode).actualType();
+
+			if (type instanceof SemPtr) {
+				SemType baseType = ((SemPtr) type).baseType;
+				SemAn.ofType.put(sfxExpr, baseType);
+				return baseType;
+			}
+
+			throw new Report.Error(sfxExpr,
+				"Can only dereference pointer expression");
+		}
+
+		// V10
+		@Override
+		public SemType visit(AstArrExpr arrExpr, Mode mode) {
+			// First expression needs to be of array type
+			SemType exprType = arrExpr.arr.accept(this, mode).actualType();
+			if (!(exprType instanceof SemArr)) {
+				throw new Report.Error(arrExpr.arr,
+					"Cannot index a non array variable");
+			}
+
+			// Index must be of integer type
+			SemType idxType = arrExpr.idx.accept(this, mode).actualType();
+			if (!(idxType instanceof SemInt)) {
+				throw new Report.Error(arrExpr.idx,
+					"Array index needs to be an integer");
+			}
+
+			SemArr arrType = (SemArr) exprType;
+			SemAn.ofType.put(arrExpr, arrType.elemType);
+			return arrType.elemType;
+		}
+
+		// V11
+		@Override
+		public SemType visit(AstRecExpr recExpr, Mode mode) {
+			// Get name type
+			SemType nameType = recExpr.rec.accept(this, mode).actualType();
+			AstNameExpr recName = (AstNameExpr) recExpr.rec;
+			AstDecl decl = SemAn.declaredAt.get(recName);
+
+			if (nameType instanceof SemRec && decl instanceof AstVarDecl) {
+				AstVarDecl recDecl = (AstVarDecl) decl;
+				AstRecType recCompType = recCompNames.get(nameType);
+
+				// Check if component name is valid
+				int idx = 0;
+				for (AstCompDecl comp : recCompType.comps) {
+					if (comp.name.equals(recExpr.comp.name)) {
+						SemType exprType = ((SemRec) nameType).compType(idx);
+						SemAn.ofType.put(recExpr, exprType);
+						return exprType;
+					}
+
+					++idx;
+				}
+
+				// Component name is not found
+				throw new Report.Error(recExpr,
+					recExpr.comp.name + " : Unknown record component name");
+			}
+
+			throw new Report.Error(recExpr,
+				recName.name + " : Record expected");
+		}
+
+		// V12
+		@Override
+		public SemType visit(AstCallExpr callExpr, Mode mode) {
+			// Make sure call is done on a function
+			AstDecl decl = SemAn.declaredAt.get(callExpr);
+			if (!(decl instanceof AstFunDecl)) {
+				throw new Report.Error(callExpr,
+					callExpr.name + " : Only functions are callable");
+			}
+
+			AstFunDecl funDecl = (AstFunDecl) decl;
+
+			// Type check arguments
+			if (funDecl.pars.size() != callExpr.args.size()) {
+				throw new Report.Error(callExpr,
+					callExpr.name + " : Incorrect number of arguments provided");
+			}
+
+			for (int i = 0 ; i < callExpr.args.size(); ++i) {
+				SemType argType = callExpr.args.get(i).accept(this, mode).actualType();
+				if (argType instanceof SemBool || argType instanceof SemChar ||
+						argType instanceof SemInt || argType instanceof SemPtr) {
+					SemType parType = funDecl.pars.get(i).accept(this, mode).actualType();
+					if (!sameType(parType, argType)) {
+						throw new Report.Error(callExpr.args.get(i),
+							"Incorrect type of argument provided");
+					}
+				} else {
+					throw new Report.Error(callExpr.args.get(i),
+						"Illegal argument provided");
+				}
+			}
+
+			SemType retType = SemAn.isType.get(funDecl.type);
+			SemAn.ofType.put(callExpr, retType);
+			return retType;
+		}
+
+		// V13
+		@Override
+		public SemType visit(AstStmtExpr stmtExpr, Mode mode) {
+			// Type check every statement and remember the last type
+			SemType type = null;
+			for (AstStmt stmt : stmtExpr.stmts) {
+				type = stmt.accept(this, mode);
+			}
+
+			SemAn.ofType.put(stmtExpr, type);
+			return type;
+		}
+
+		// V14
+		@Override
+		public SemType visit(AstCastExpr castExpr, Mode mode) {
+			SemType expr = castExpr.expr.accept(this, mode).actualType();
+			SemType type = castExpr.type.accept(this, mode);
+			SemType cast = type.actualType();
+
+			// Can only cast from char, int and ptr
+			if (!(expr instanceof SemChar || expr instanceof SemInt ||
+					expr instanceof SemPtr)) {
+				throw new Report.Error(castExpr.expr,
+					"Only casts from char, int and ptr are legal");
+			}
+
+			// Can only cast to char, int and ptr
+			if (!(cast instanceof SemChar || cast instanceof SemInt ||
+					cast instanceof SemPtr)) {
+				throw new Report.Error(castExpr.type,
+					"Only casts to char, int and ptr are legal");
+			}
+
+			SemAn.ofType.put(castExpr, type);
+			return type;
+		}
+
+		// V15
+		@Override
+		public SemType visit(AstWhereExpr whereExpr, Mode mode) {
+			SemType decls = whereExpr.decls.accept(this, mode);
+			SemType type = whereExpr.expr.accept(this, mode);
+			SemAn.ofType.put(whereExpr, type);
+			return type;
+		}
+
+		// STATEMENTS
+
+		// S1
+		@Override
+		public SemType visit(AstAssignStmt assignStmt, Mode mode) {
+			// Make sure both sides are of the same type
+			SemType lhs = assignStmt.dst.accept(this, mode).actualType();
+			SemType rhs = assignStmt.src.accept(this, mode).actualType();
+			if (!sameType(lhs, rhs)) {
+				throw new Report.Error(assignStmt,
+					"Cannot assign to a different type");
+			}
+
+			// Only certain types are assignable
+			if (!(lhs instanceof SemBool || lhs instanceof SemChar ||
+					lhs instanceof SemInt || lhs instanceof SemPtr)) {
+				throw new Report.Error(assignStmt,
+					"Illegal type for assignment");
+			}
+
+			SemType type = new SemVoid();
+			SemAn.ofType.put(assignStmt, type);
+			return type;
+		}
+
+		@Override
+		public SemType visit(AstExprStmt exprStmt, Mode mode) {
+			SemType type = exprStmt.expr.accept(this, mode);
+			SemAn.ofType.put(exprStmt, type);
+			return type;
+		}
+
+		// S2
+		@Override
+		public SemType visit(AstIfStmt ifStmt, Mode mode) {
+			SemType cond = ifStmt.cond.accept(this, mode).actualType();
+			SemType thenType = ifStmt.thenStmt.accept(this, mode);
+			SemType elseType = ifStmt.elseStmt.accept(this, mode);
+
+			// Condition needs to be bool
+			if (!(cond instanceof SemBool)) {
+				throw new Report.Error(ifStmt,
+					"Condition in if statements needs to be of boolean type");
+			}
+
+			SemType type = new SemVoid();
+			SemAn.ofType.put(ifStmt, type);
+			return type;
+		}
+
+		// S3
+		@Override
+		public SemType visit(AstWhileStmt whileStmt, Mode mode) {
+			SemType cond = whileStmt.cond.accept(this, mode).actualType();
+			// Condition needs to be bool
+			if (!(cond instanceof SemBool)) {
+				throw new Report.Error(whileStmt,
+					"Condition in while statements needs to be of boolean type");
+			}
+
+			SemType body = whileStmt.bodyStmt.accept(this, mode);
+
+			SemType type = new SemVoid();
+			SemAn.ofType.put(whileStmt, type);
+			return type;
+
+		}
+
 		// DECLARATIONS
 
 		@Override
@@ -339,8 +710,10 @@
 				type.define(typeDecl.type.accept(this, mode));
 				return type;
 			} else if (mode == Mode.CYCLE_CHECK) {
+				Set<String> types = new HashSet<>();
+				types.add(typeDecl.name);
 				if (includesType(
-						typeDecl.name,
+						types,
 						SemAn.declaresType.get(typeDecl).type())) {
 					throw new Report.Error(typeDecl,
 						typeDecl.name + " : Cyclic type not allowed");
@@ -389,10 +762,10 @@
 			} else if (mode == Mode.BODY) {
 				// Type check expression if present
 				if (funDecl.expr != null) {
-					SemType retType = SemAn.isType.get(funDecl.type);
+					SemType retType = SemAn.isType.get(funDecl.type).actualType();
 					SemType bodyType = funDecl.expr.accept(this, mode).actualType();
-					// Expression type need to match return type
-					if (retType.getClass().equals(bodyType.getClass())) {
+					// Expression type need to match return typevisit(
+					if (sameType(retType, bodyType)) {
 						return null;
 					}
 

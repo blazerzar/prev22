@@ -6,7 +6,7 @@
 typ crna_lukna = void
 typ znak = char
 typ stevilo = int
-typ pravilnosti = bool
+typ pravilnost = bool
 
 # Array types
 typ tabela_znakov = [+42]char
@@ -34,6 +34,7 @@ typ Node = { value : int, left : ^Node, right : ^Node }
 # typ void_record = { empty : void }
 # typ redeclared = { a : int, c: bool, a : char }
 # typ cyclic = { a : cyclic2 } typ cyclic2 = cyclic
+# typ cycle = { a : cycle }
 
 
 # Name types
@@ -69,26 +70,94 @@ fun g(a : int) : int
 fun void_ret() : crna_lukna2
 fun visina_osebe(os : ^oseba) : stevilo
 fun get_42() : int = 42
+var a : int
+fun get_ptr() : ^int = ^a
+fun get_par(a : char) : char = a
+fun get_fun_call() : int = get_42()
+fun get_age() : int = bostjan.starost
 # Function errors
 # fun ill_return() : oseba
 # fun ill_par(os : oseba) : int
 # fun wrong_ret() : int = true
 
+var void_pointer : ^void
+var name : ^char
+var status : bool
+var key : char
+var age : int
+var cifra : stevilo
+var flag : pravilnost
+var int_ptr : ^int
+var bobi : person
+
+typ node = { i : int, l : ^node, r : ^node }
+typ node2 = { i : int, l : ^node2, r : ^node2 }
+var tree : node
+var tree2 : node2
+
 # -----------
 # EXPRESSIONS
 # -----------
-fun expr_test() : void = none
-# {
-#     none;    
-#     nil;
-#     "Hello world!";
-#     true;
-#     false;
-#     'h';
-#     42;
-#     !true;
-#     +42;
-#     -42;
-# }
+fun main(argc : int, argv : ^[128]char) : int = {
+    int_ptr = (new 5: ^int);
 
+    void_pointer = nil;
+    name = "Hello world!";
+    status = true | false;
+    key = 'h';
+    age = 42;
+
+    status = !status;
+    age = -age;
+
+    status = (a / b > (d : int) & c) where {
+        var a : int
+        var b : int
+        var c : bool
+        var d : char
+    };
+
+    flag = ^cifra < ^age;
+    age = int_ptr^ + cifra % 3;
+
+    del int_ptr;
+
+    key = argv^[0];
+    bostjan.ime = "Bostjan";
+    bostjan.priimek = "Slivnik";
+    bostjan.starost = (get_42());
+    
+    if bostjan.starost % 2 == 0 then {
+        bostjan.ime = "Bostjan sodi";
+    } else {
+        bostjan.ime = "Bostjan lihi";
+    };
+
+    while bostjan.starost != 1 do {
+        if bostjan.starost % 2 == 0 then {
+            bostjan.starost = bostjan.starost / 2;
+        } else {
+            bostjan.starost = 3 * bostjan.starost + 1;
+        };
+    };
+
+    bobi.ime = "Bobi";
+    bobi.priimek = "Frnikula";
+
+    flag = ^bostjan == ^bobi;
+    # flag = tree == tree2;
+
+    # Errors
+    # age = (flag : int);
+    # 5 = age;
+    # age = status + key;
+    # status = age != key;
+    # if age then age = 0 else age = 1;
+    # while age do age = age - 1;
+    # bobi = bostjan;
+    # status = get_age();
+    # flag = ^bostjan == age;
+
+    0;
+}
 
