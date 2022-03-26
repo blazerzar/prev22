@@ -68,24 +68,27 @@ fun f() : void
 fun g(a : int) : int
 fun void_ret() : crna_lukna2
 fun visina_osebe(os : ^oseba) : stevilo
+fun get_42() : int = 42
 # Function errors
 # fun ill_return() : oseba
 # fun ill_par(os : oseba) : int
+# fun wrong_ret() : int = true
 
 # -----------
 # EXPRESSIONS
 # -----------
-fun expr_test() : void = {
-    none;    
-    nil;
-    "Hello world!";
-    true;
-    false;
-    'h';
-    42;
-    !true;
-    +42;
-    -42;
-}
+fun expr_test() : void = none
+# {
+#     none;    
+#     nil;
+#     "Hello world!";
+#     true;
+#     false;
+#     'h';
+#     42;
+#     !true;
+#     +42;
+#     -42;
+# }
 
 

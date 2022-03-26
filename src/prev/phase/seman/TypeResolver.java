@@ -255,7 +255,6 @@
 				case CHAR    -> new SemChar();
 				case INT     -> new SemInt();
 			};
-			System.out.println("testing");
 			SemAn.ofType.put(atomExpr, type);
 			return type;
 		}
@@ -389,6 +388,18 @@
 					funDecl.name + " : Illegal function return type");
 			} else if (mode == Mode.BODY) {
 				// Type check expression if present
+				if (funDecl.expr != null) {
+					SemType retType = SemAn.isType.get(funDecl.type);
+					SemType bodyType = funDecl.expr.accept(this, mode).actualType();
+					// Expression type need to match return type
+					if (retType.getClass().equals(bodyType.getClass())) {
+						return null;
+					}
+
+					throw new Report.Error(funDecl,
+						funDecl.name + " : Function return and expression type do not match");
+
+				}
 			}
 
 			return null;
