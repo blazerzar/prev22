@@ -9,7 +9,7 @@ typ stevilo = int
 typ pravilnost = bool
 
 # Array types
-typ tabela_znakov = [+42]char
+typ tabela_znakov = [++42]char
 typ tabela_rec = [2]{ a : int, b : ^char }
 # Array errors
 # typ prazna_tabela = [0]bool

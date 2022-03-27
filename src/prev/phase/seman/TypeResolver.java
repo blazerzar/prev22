@@ -49,7 +49,6 @@
 				}
 			} else if (tree instanceof SemPtr) {
 				// Pointers in records break the cycle
-				// return includesType(type, ((SemPtr) tree).baseType);
 				return false;
 			} else if (tree instanceof SemRec) {
 				SemRec rec = (SemRec) tree;
@@ -207,10 +206,11 @@
 		public SemType visit(AstArrType arrType, Mode mode) {
 			// Type check array element type
 			SemType elemType = arrType.elemType.accept(this, mode);
+			SemType exprType = arrType.numElems.accept(this, mode);
 			AstExpr num = arrType.numElems;
 
 			// Size can be preffixed by a +
-			if (num instanceof AstPfxExpr) {
+			while (num instanceof AstPfxExpr) {
 				AstPfxExpr pfxExpr = (AstPfxExpr) num;
 				if (pfxExpr.oper != AstPfxExpr.Oper.ADD) {
 					throw new Report.Error(num,
@@ -293,7 +293,6 @@
 			if (typeDecl instanceof AstTypeDecl) {
 				SemType type = SemAn.declaresType.get((AstTypeDecl) typeDecl);
 				SemAn.isType.put(nameType, type);
-				// System.out.println("hello");
 				return type;
 			} else {
 				throw new Report.Error(nameType,
@@ -330,7 +329,6 @@
 				}
 				type = SemAn.isType.get(funDecl.type);
 			}
-
 
 			if (type == null) {
 				throw new Report.Error(nameExpr,
