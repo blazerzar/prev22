@@ -91,7 +91,8 @@ var int_ptr : ^int
 var bobi : person
 
 typ node = { i : int, l : ^node, r : ^node }
-typ node2 = { i : int, l : ^node2, r : ^node2 }
+typ node2 = { i : int, l : ^node2, r : ^node3 }
+typ node3 = { i : int, l : ^node2, r : ^node3 }
 var tree : node
 var tree2 : node2
 
@@ -145,7 +146,7 @@ fun main(argc : int, argv : ^[128]char) : int = {
     bobi.priimek = "Frnikula";
 
     flag = ^bostjan == ^bobi;
-    # flag = tree == tree2;
+    flag = ^tree == ^tree2;
 
     # Errors
     # age = (flag : int);

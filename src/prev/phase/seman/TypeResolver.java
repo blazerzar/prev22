@@ -31,8 +31,7 @@
 		}
 
 		/**
-		*  Return true if [tree] includes any of [types] in its definition
-		*  tree unless this is the top most node.
+		*  Return true if [tree] includes any of [types] in its definition tree.
 		*/
 		public boolean includesType(Set<String> types, SemType tree) {
 			if (tree instanceof SemArr) {
@@ -64,10 +63,28 @@
 		}
 
 		/**
-		 * Return true if both classes represent the same type.
+		 * Return true if both classes represent the same type. Use map [c] to
+		 * prevent cycling.
 		 */
-		public boolean sameType(SemType a, SemType b) {
-			// TODO: Check for cycles
+		public boolean sameType(SemType a, SemType b, Map<String, Set<String>> c) {
+			// Check for cycles when using aliases
+			if (a instanceof SemName && b instanceof SemName) {
+				SemName aa = (SemName) a;
+				SemName bb = (SemName) b;
+
+				// Check if we have visited [a] and [b] together already
+				if (c.containsKey(aa.name)) {
+					if (c.get(aa.name).contains(bb.name)) {
+						return true;
+					} else {
+						c.get(aa.name).add(bb.name);
+					}
+				} else {
+					c.put(aa.name, new HashSet<>());
+					c.get(aa.name).add(bb.name);
+				}
+			}
+
 			a = a.actualType();
 			b = b.actualType();
 
@@ -75,7 +92,7 @@
 				SemArr aa = (SemArr) a;
 				SemArr bb = (SemArr) b;
 				return aa.numElems == bb.numElems &&
-					sameType(aa.elemType, bb.elemType);
+					sameType(aa.elemType, bb.elemType, c);
 			} else if (a instanceof SemBool && b instanceof SemBool ||
 					a instanceof SemChar && b instanceof SemChar ||
 					a instanceof SemInt && b instanceof SemInt ||
@@ -84,14 +101,14 @@
 			} else if (a instanceof SemPtr && b instanceof SemPtr) {
 				SemPtr aa = (SemPtr) a;
 				SemPtr bb = (SemPtr) b;
-				return sameType(aa.baseType, bb.baseType);
+				return sameType(aa.baseType, bb.baseType, c);
 			} else if (a instanceof SemRec && b instanceof SemRec) {
 				SemRec aa = (SemRec) a;
 				SemRec bb = (SemRec) b;
 				if (aa.numComps() != bb.numComps()) return false;
 
 				for (int i = 0; i < aa.numComps(); ++i) {
-					if (!sameType(aa.compType(i), bb.compType(i))) {
+					if (!sameType(aa.compType(i), bb.compType(i), c)) {
 						return false;
 					}
 				}
@@ -426,7 +443,7 @@
 
 				// V6
 				case EQU, NEQ -> {
-					if (!sameType(lhs, rhs)) {
+					if (!sameType(lhs, rhs, new HashMap<>())) {
 						throw new Report.Error(binExpr,
 							"Cannot compare different types");
 					}
@@ -444,7 +461,7 @@
 
 				// V7
 				case LEQ, GEQ, LTH, GTH -> {
-					if (!sameType(lhs, rhs)) {
+					if (!sameType(lhs, rhs, new HashMap<>())) {
 						throw new Report.Error(binExpr,
 							"Cannot compare different types");
 					}
@@ -558,7 +575,7 @@
 				if (argType instanceof SemBool || argType instanceof SemChar ||
 						argType instanceof SemInt || argType instanceof SemPtr) {
 					SemType parType = funDecl.pars.get(i).accept(this, mode).actualType();
-					if (!sameType(parType, argType)) {
+					if (!sameType(parType, argType, new HashMap<>())) {
 						throw new Report.Error(callExpr.args.get(i),
 							"Incorrect type of argument provided");
 					}
@@ -628,7 +645,7 @@
 			// Make sure both sides are of the same type
 			SemType lhs = assignStmt.dst.accept(this, mode).actualType();
 			SemType rhs = assignStmt.src.accept(this, mode).actualType();
-			if (!sameType(lhs, rhs)) {
+			if (!sameType(lhs, rhs, new HashMap<>())) {
 				throw new Report.Error(assignStmt,
 					"Cannot assign to a different type");
 			}
@@ -764,8 +781,8 @@
 				if (funDecl.expr != null) {
 					SemType retType = SemAn.isType.get(funDecl.type).actualType();
 					SemType bodyType = funDecl.expr.accept(this, mode).actualType();
-					// Expression type need to match return typevisit(
-					if (sameType(retType, bodyType)) {
+					// Expression type need to match return type
+					if (sameType(retType, bodyType, new HashMap<>())) {
 						return null;
 					}
 
