@@ -158,6 +158,8 @@ fun main(argc : int, argv : ^[128]char) : int = {
     # bobi = bostjan;
     # status = get_age();
     # flag = ^bostjan == age;
+    # 5 = age;
+    # age + bobi.starost = 42;
 
     0;
 }
