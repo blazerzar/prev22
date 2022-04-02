@@ -81,13 +81,8 @@ public class AddrResolver extends AstFullVisitor<Object, Object> {
 	@Override
 	public Object visit(AstRecExpr recExpr, Object arg) {
         boolean res = (Boolean) recExpr.rec.accept(this, arg);
-        if (res) {
-            SemAn.isAddr.put(recExpr, true);
-            return true;
-        } else {
-            SemAn.isAddr.put(recExpr, false);
-            return false;
-        }
+        SemAn.isAddr.put(recExpr, res);
+        return res;
 	}
 
 	@Override

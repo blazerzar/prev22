@@ -522,11 +522,8 @@
 		public SemType visit(AstRecExpr recExpr, Mode mode) {
 			// Get name type
 			SemType nameType = recExpr.rec.accept(this, mode).actualType();
-			AstNameExpr recName = (AstNameExpr) recExpr.rec;
-			AstDecl decl = SemAn.declaredAt.get(recName);
 
-			if (nameType instanceof SemRec && decl instanceof AstVarDecl) {
-				AstVarDecl recDecl = (AstVarDecl) decl;
+			if (nameType instanceof SemRec) {
 				AstRecType recCompType = recCompNames.get(nameType);
 
 				// Check if component name is valid
@@ -546,8 +543,7 @@
 					recExpr.comp.name + " : Unknown record component name");
 			}
 
-			throw new Report.Error(recExpr,
-				recName.name + " : Record expected");
+			throw new Report.Error(recExpr, "Record expected");
 		}
 
 		// V12
