@@ -1,3 +1,10 @@
-typ stevilo = int
-typ integer = stevilo
-var i : stevilo
+typ rec1 = {comp1 : int, next : ^rec1}
+var var1 : rec1
+
+fun func1(par11 : ^rec1, par12 : char) : int = 0 where
+{
+	var local1 : {comp1 : ^rec1, comp2: ^char}
+	fun func11() : void
+	var local2 : int
+	fun func12() : void
+}

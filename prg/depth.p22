@@ -1,0 +1,6 @@
+fun f1(p1 : int, v1 : int) : int = f2(p1) where {
+	var L1 : int
+	fun f2(p2 : int) : int = f3(v1+p2) where {
+		fun f3(p3 : int) : int = 2*p3-L1
+	}
+}

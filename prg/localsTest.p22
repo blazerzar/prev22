@@ -1,0 +1,14 @@
+var i : int
+var j : {x: int, y:char}
+var str : ^char
+
+fun f() : void = {
+	{ loc_i = 3;
+	} where {
+		var loc_i : int
+		var loc_arr : [10]int
+	};
+} where {
+	var loc_c : int
+	var loc_rec : {x: int, y: char}
+}

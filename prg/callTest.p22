@@ -1,0 +1,15 @@
+var i: int
+var str: ^char
+
+fun args4(a : int, b : char) : int = {
+	str = "zaj pa panika";
+	i = g(i, 2, 3)
+	where {
+		fun g(p1 : int, p2 : int, p3 : int) : int = p1 + p2 + p3
+	};
+	args4(args4(a, b), b);
+}
+
+fun args6(a: int, b: int, c: int, d: int, e: int) : void = {
+	args6(1, 2, 3, 4, 5);
+}

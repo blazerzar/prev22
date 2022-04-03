@@ -1,0 +1,4 @@
+typ recKlasik = {x: int, y: char}
+typ recArr = {arr: [10]int, x: int, y: char}
+typ recRecNamed = {rec: recKlasik, x: int, y: char}
+typ recRecDirect = {rec: {x: int, y: char}, x: int, y: char}

@@ -1,0 +1,5 @@
+typ r1 = {c1 : int, c2 : {c21: int, c22 : ^[2]char}}
+
+var v1 : r1
+
+fun f1 () : ^[2]char = v1.c2.c22
