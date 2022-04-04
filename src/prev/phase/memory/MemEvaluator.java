@@ -189,11 +189,16 @@ public class MemEvaluator extends AstFullVisitor<Object, MemEvaluator.Context> {
 	public Object visit(AstAtomExpr atomExpr, Context context) {
 		// Map string constants to accesses
 		if (atomExpr.type == AstAtomExpr.Type.STRING) {
-			// Get string size (length * charSize)
-			long strSize = atomExpr.value.length() * 8;
+			// Remove quotes and replace escaped characters
+			String value = atomExpr.value
+				.substring(1, atomExpr.value.length() - 1)
+				.replaceAll("\\\\\"", "\"");
+
+			// Get string size (length * charSize), +1 for \0
+			long strSize = (value.length() + 1) * 8;
 
 			Memory.strings.put(atomExpr, new MemAbsAccess(
-				strSize, new MemLabel(), atomExpr.value
+				strSize, new MemLabel(), value
 			));
 		}
 

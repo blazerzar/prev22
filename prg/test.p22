@@ -1,5 +1,10 @@
 typ rec1 = {comp1 : int, next : ^rec1}
 var var1 : rec1
+var nizTest : ^char
+
+fun makeString() : void = {
+    nizTest = "Hello \"World\"!";
+}
 
 fun func1(par11 : ^rec1, par12 : char) : int = 0 where
 {
