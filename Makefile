@@ -1,5 +1,5 @@
-JAVA		= java
-JAVAC		= javac
+JAVA		= java --enable-preview
+JAVAC		= javac --enable-preview --release 17
 ANTLR           = org.antlr.v4.Tool
 ANTLRDIR	= lib/antlr-4.9.3-complete.jar
 RM		= 'rm' -fr
