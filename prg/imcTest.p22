@@ -1,0 +1,114 @@
+var a : int
+var b : int
+var c : char
+var name : ^char
+var state : bool
+
+# Unary operations
+fun f1() : void = {
+    state = !false; 
+    state = !state;
+
+    a = +42;
+    b = -+42;
+    b = --42;
+}
+
+# Binary operations
+fun f2() : void = {
+    c = (a + b * 3 - a % 2 : char);
+    state = false | a > b & state;
+    state = a >= b & a <= b | a < b;
+    state = a == b | a != b;
+}
+
+var i : int
+var pi : ^int
+
+# Pointers fun
+fun f3() : void = {
+    i = 42; 
+    pi = ^i;
+    pi^ = 43;
+
+    pi = (new i : ^int);
+    del pi;
+}
+
+typ person = { name : ^char, age : int, height : int }
+var persons : [10]person
+var numbers : [42]int
+
+# Arrays
+fun f4() : int = {
+    numbers[5] = 5;
+    persons[31];
+
+    c = {
+        a[1] = 'a';
+        a[1 * numbers[1]];
+    } where {
+        var a : [3]char 
+    };
+
+    0;
+}
+
+var item : { type : ^char, size : int, parts : int, loc : { x : int, y : int } }
+
+# Records
+fun f5() : int = {
+    item.loc.y;
+
+    i = {
+        localRec.a = 'a';
+        localRec.x = 42;
+        localRec.x;
+    } where {
+        typ record = { a : char, nums : [3]int,  x : int }
+        var localRec : record
+    };
+
+    0;
+}
+
+fun sum(a : int, b : char) : int = a + (b : int)
+
+# Function calls
+fun main() : int = {
+    f1(); 
+    f5();
+    sum(4, 'c');
+    42;
+}
+
+# Nested functions and local variables
+fun f6_1(param1 : int) : int = {
+    (local1 + param1 + f6_2(42)) where {
+        var local1 : int
+        fun f6_2(param2 : int) : int = {
+            (param1 + local1 + param2 + local2) where {
+                var local2 : int
+                fun f6_3(param3 : int) : int = {
+                    local1 + param3;
+                    f6_1(0) + f6_2(0) + f6_3(0) + main();
+                }
+            };  
+        }
+    }; 
+}
+
+# Statements
+fun f7() : void = {
+    42;
+    i = 42;
+
+    if state then
+        i = 0
+    else
+        i = 42;
+
+    while i > 0 do
+        i = i / 2;
+}
+

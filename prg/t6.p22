@@ -1,0 +1,25 @@
+var b : bool
+var s : ^char
+fun main() : void = {
+	s = (new 100 : ^char);
+	i = 0;
+	while(i < 500) do {
+		f(i);
+		i = i + 1;
+	};
+} where {
+	var i : int
+}
+
+fun f(a : int) : char = {
+	if(a < 256)
+	then c = 'T'
+	else c = 'F';
+	c;
+} where {
+	var c : char
+}
+
+fun g(b : char) : int = {
+	(b : int);
+}

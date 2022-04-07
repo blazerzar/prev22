@@ -1,0 +1,22 @@
+fun f1(v1 : int) : int = {
+    v11 where {
+        var v11 : int
+        fun f2(v2 : int) : int = {
+            v11 = {
+                v11; 
+                v22;
+            } where {
+                var v22 : int
+                fun f3(v3 : int) : int = {
+                    v11;
+                    v1;
+                    v22;
+                    v2;
+                    v3;
+                }
+            };
+            v11;
+        }
+    }; 
+    v1;
+}

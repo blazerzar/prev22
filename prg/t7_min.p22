@@ -1,0 +1,5 @@
+fun f(b : int) : int = 1 where {
+	fun g(a : int) : int = b where {
+		fun h(p : int) : int = b
+	}
+}

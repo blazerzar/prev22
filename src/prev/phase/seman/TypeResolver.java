@@ -532,6 +532,9 @@
 					if (comp.name.equals(recExpr.comp.name)) {
 						SemType exprType = ((SemRec) nameType).compType(idx);
 						SemAn.ofType.put(recExpr, exprType);
+
+						SemAn.declaredAt.put(recExpr.comp, comp);
+
 						return exprType;
 					}
 
