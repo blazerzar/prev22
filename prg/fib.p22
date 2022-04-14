@@ -1,0 +1,37 @@
+fun main() : int = {
+    # fibRec(10);
+    fibDyn(10);
+}
+
+fun fibRec(n : int) : int = {
+    {
+        if n <= 1 then
+            result = n
+        else
+            result = fibRec(n - 2) + fibRec(n - 1);
+        result;
+    } where {
+        var result : int
+    };
+}
+
+fun fibDyn(n : int) : int = {
+    {
+        curr = 0;
+        next = 1;
+        i = 0;
+
+        while i < n do {
+            temp = next;
+            next = curr + next;
+            curr = temp;
+            i = i + 1;
+        };
+        curr;
+    } where {
+        var curr : int
+        var next : int
+        var temp : int
+        var i : int
+    };
+}

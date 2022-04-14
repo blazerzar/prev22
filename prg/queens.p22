@@ -1,0 +1,81 @@
+var result : int
+var N : int
+
+fun main() : int = {
+    N = 8;
+    result = {
+        queens(^positions, 0);
+    } where {
+        var positions : [8]int
+    };
+    result;
+}
+
+fun queens(positions : ^[8]int, currentQueen : int) : int = {
+    {
+        if currentQueen == N then
+            # All queens have been placed
+            result = 1
+        else {
+            i = 0;
+            result = 0;
+
+            # Try to place queen on all rows
+            while i < N do {
+                valid = true;
+                j = 0;
+
+                # Check if previous queens do not attack the new one
+                while j < currentQueen & valid do {
+                    if queensAttack(j, positions^[j], currentQueen, i) then
+                        valid = false
+                    else
+                        valid = true;
+                    j = j + 1;
+                };
+
+                # If queens do not attack themselves, place queens and continue
+                if valid then {
+                    # Place next queen
+                    positions^[currentQueen] = i;
+                    result = result + queens(positions, currentQueen + 1);
+                } else {
+                    none;
+                };
+
+                # Try next row
+                i = i + 1;
+            };
+        };
+        result;
+    } where {
+        var result : int
+        var valid : bool
+        var i : int
+        var j : int
+    };
+}
+
+fun queensAttack(x1 : int, y1 : int, x2 : int, y2 : int) : bool = {
+    {
+        if abs(x1 - x2) == 0 | abs(y1 - y2) == 0 | abs(x1 - x2) == abs(y1 - y2) then
+            state = true
+        else
+            state = false;
+        state;
+    } where {
+        var state : bool
+    };
+}
+
+fun abs(x : int) : int = {
+    {
+        if x < 0 then
+            result = -x
+        else
+            result = x;
+        result;
+    } where {
+        var result : int
+    };
+}

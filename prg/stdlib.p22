@@ -1,0 +1,55 @@
+var s : ^char
+fun main() : void = {
+	s = "To je testni string \"joj\"";
+	putString(s);
+	newLine();
+	getString(^cbuf);
+	putString((^cbuf[0] : ^char));
+	newLine();
+	i = 0;
+	while i < 10 do {
+		putInt(i);
+		newLine();
+		i = i + 1;
+	};
+} where {
+	var cbuf : [100]char
+	var i : int
+}
+
+fun getString(s : ^[100]char) : int = {
+	count = 0;
+	c = getChar();
+	while count < 100 & c >= 32 & c <= 126 do {
+		s^[count] = (c : char);
+		count = count + 1;
+		c = getChar();
+	};
+	(s : ^[100]int)^[count] = 0;
+	count;
+} where {
+	var c : int
+	var count : int
+}
+fun putString(s : ^char) : int = {
+	count = 0;
+	x = (s : ^int);
+	while x^ != 0 do {
+		putChar(x^);
+		x = ((x : int) + 1 : ^int);
+		count = count + 1;
+	};
+	count;
+} where {
+	var x : ^int
+	var count : int
+}
+fun newLine() : void = putChar(10)
+fun putInt(x : int) : void = {
+	if x/10 > 0
+	then putInt(x/10)
+	else none;
+	putChar(x%10 + ('0': int));
+}
+fun putChar(c : int) : void
+fun getChar() : int
