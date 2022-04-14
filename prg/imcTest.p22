@@ -6,7 +6,7 @@ var state : bool
 
 # Unary operations
 fun f1() : void = {
-    state = !false; 
+    state = !false;
     state = !state;
 
     a = +42;
@@ -27,7 +27,7 @@ var pi : ^int
 
 # Pointers fun
 fun f3() : void = {
-    i = 42; 
+    i = 42;
     pi = ^i;
     pi^ = 43;
 
@@ -48,7 +48,7 @@ fun f4() : int = {
         a[1] = 'a';
         a[1 * numbers[1]];
     } where {
-        var a : [3]char 
+        var a : [3]char
     };
 
     0;
@@ -76,8 +76,13 @@ fun sum(a : int, b : char) : int = a + (b : int)
 
 # Function calls
 fun main() : int = {
-    f1(); 
+    f1();
+    f2();
+    f3();
+    f4();
     f5();
+    f6_1(42);
+    f7();
     sum(4, 'c');
     42;
 }
@@ -93,9 +98,9 @@ fun f6_1(param1 : int) : int = {
                     local1 + param3;
                     f6_1(0) + f6_2(0) + f6_3(0) + main();
                 }
-            };  
+            };
         }
-    }; 
+    };
 }
 
 # Statements
