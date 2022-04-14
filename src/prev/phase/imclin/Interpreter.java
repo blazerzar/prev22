@@ -53,9 +53,9 @@ public class Interpreter {
 			}
 			this.dataMemLabels.put(dataChunk.label, tempLD(HP, false));
 			if (dataChunk.init != null) {
-				for (int c = 0; c < dataChunk.init.length() - 2; c++)
-					memST(tempLD(HP, false) + 8 * c, (long) dataChunk.init.charAt(c + 1), false);
-				memST(tempLD(HP, false) + 8 * (dataChunk.init.length() - 2), 0L, false);
+				for (int c = 0; c < dataChunk.init.length() /* - 2 */; c++)
+					memST(tempLD(HP, false) + 8 * c, (long) dataChunk.init.charAt(c /* + 1 */), false);
+				memST(tempLD(HP, false) + 8 * (dataChunk.init.length() /* - 2 */), 0L, false);
 			}
 			tempST(HP, tempLD(HP, false) + dataChunk.size, debug);
 		}
