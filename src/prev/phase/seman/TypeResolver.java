@@ -53,7 +53,7 @@
 			} else if (tree instanceof SemRec) {
 				SemRec rec = (SemRec) tree;
 				for (int i = 0; i < rec.numComps(); ++i) {
-					if (includesType(types, rec.compType(i))) {
+					if (includesType(new HashSet<>(types), rec.compType(i))) {
 						return true;
 					}
 				}
@@ -77,6 +77,12 @@
 						return true;
 					} else {
 						c.get(aa.name).add(bb.name);
+					}
+				} else if (c.containsKey(bb.name)) {
+					if (c.get(bb.name).contains(aa.name)) {
+						return true;
+					} else {
+						c.get(bb.name).add(aa.name);
 					}
 				} else {
 					c.put(aa.name, new HashSet<>());
