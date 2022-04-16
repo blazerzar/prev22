@@ -13,6 +13,7 @@ import prev.data.imc.code.stmt.*;
 import prev.data.typ.*;
 import prev.phase.memory.*;
 import prev.phase.seman.SemAn;
+import prev.common.report.*;
 
 public class CodeGenerator extends AstNullVisitor<Object, Stack<MemFrame>> {
 
@@ -88,7 +89,13 @@ public class CodeGenerator extends AstNullVisitor<Object, Stack<MemFrame>> {
             case ADD -> expr;
             case SUB -> new ImcUNOP(ImcUNOP.Oper.NEG, expr);
             case NOT -> new ImcUNOP(ImcUNOP.Oper.NOT, expr);
-            case PTR -> ((ImcMEM) expr).addr;
+            case PTR -> {
+                // Can only get ptr if expression has an address
+                if (expr instanceof ImcMEM) {
+                    yield ((ImcMEM) expr).addr;
+                }
+                throw new Report.Error(pfxExpr, "Address operator requires l-value");
+            }
             case NEW -> {
                 Vector<Long> offsets = new Vector<>(Arrays.asList(new Long[]{ 0L }));
                 Vector<ImcExpr> args = new Vector<>(Arrays.asList(new ImcExpr[]{ expr }));
