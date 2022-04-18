@@ -142,12 +142,17 @@ public class CodeGenerator extends AstNullVisitor<Object, Stack<MemFrame>> {
 
         // Parameterless function
         if (decl instanceof AstFunDecl) {
+            // Called function
             MemFrame frame = Memory.frames.get((AstFunDecl) decl);
 
             // Get SL
             ImcExpr SL = new ImcTEMP(frames.peek().FP);
-            for (int i = 0; i < frames.peek().depth - frame.depth; ++i) {
+            for (int i = 0; i < frames.peek().depth - frame.depth + 1; ++i) {
                 SL = new ImcMEM(SL);
+            }
+
+            if (frame.depth == 0) {
+                SL = new ImcCONST(0);
             }
 
             // Create offsets and arguments list for SL
@@ -245,8 +250,12 @@ public class CodeGenerator extends AstNullVisitor<Object, Stack<MemFrame>> {
 
         // Get SL
         ImcExpr SL = new ImcTEMP(frames.peek().FP);
-        for (int i = 0; i < frames.peek().depth - frame.depth; ++i) {
+        for (int i = 0; i < frames.peek().depth - frame.depth + 1; ++i) {
             SL = new ImcMEM(SL);
+        }
+
+        if (frame.depth == 0) {
+            SL = new ImcCONST(0);
         }
 
         // Create offsets and arguments list for SL
