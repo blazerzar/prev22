@@ -97,13 +97,17 @@ public class CodeGenerator extends AstNullVisitor<Object, Stack<MemFrame>> {
                 throw new Report.Error(pfxExpr, "Address operator requires l-value");
             }
             case NEW -> {
-                Vector<Long> offsets = new Vector<>(Arrays.asList(new Long[]{ 0L }));
-                Vector<ImcExpr> args = new Vector<>(Arrays.asList(new ImcExpr[]{ expr }));
+                Vector<Long> offsets = new Vector<>(Arrays.asList(
+                    new Long[]{ 0L, 8L }));
+                Vector<ImcExpr> args = new Vector<>(Arrays.asList(
+                    new ImcExpr[]{ new ImcCONST(0), expr }));
                 yield new ImcCALL(new MemLabel("new"), offsets, args);
             }
             case DEL -> {
-                Vector<Long> offsets = new Vector<>(Arrays.asList(new Long[]{ 0L }));
-                Vector<ImcExpr> args = new Vector<>(Arrays.asList(new ImcExpr[]{ expr }));
+                Vector<Long> offsets = new Vector<>(Arrays.asList(
+                    new Long[]{ 0L, 8L }));
+                Vector<ImcExpr> args = new Vector<>(Arrays.asList(
+                    new ImcExpr[]{ new ImcCONST(0), expr }));
                 yield new ImcCALL(new MemLabel("del"), offsets, args);
             }
         };
