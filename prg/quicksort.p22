@@ -1,0 +1,135 @@
+fun swap(a : ^int, b : ^int) : void = {
+    t = a^;
+    a^ = b^;
+    b^ = t;
+} where {
+    var t : int
+}
+
+fun partition(array : ^[100]int, low : int, high : int) : int = {
+    pivot = array^[high];
+    i = (low - 1);
+    j = low;
+    while (j < high) do {
+        if (array^[j] <= pivot) then {
+            i = i + 1;
+            swap(^array^[i], ^array^[j]);
+        }
+        else none;
+        j = j + 1;
+    };
+    swap(^array^[i + 1], ^array^[high]);
+    i + 1;
+} where {
+    var pivot : int
+    var i : int
+    var j : int
+}
+
+fun quickSort(array : ^[100]int, low : int, high : int) : void = {
+    if (low < high) then {
+        pi = partition(array, low, high);
+        quickSort(array, low, pi - 1);
+        quickSort(array, pi + 1, high);
+    }
+    else none;
+} where {
+    var pi : int
+}
+
+fun printArray(array : ^[100]int, size : int) : void = {
+    putChar(91);
+    i = 0;
+    while (i < size) do {
+        if i > 0 then {
+            print(", ");
+        }
+        else none;
+        if (array^[i] > 0) then {
+            printNumber(array^[i]);
+        }
+        else {
+            putChar(48);
+        };
+        i = i + 1;
+    };
+    putChar(93);
+    putChar(10);
+} where {
+    var i : int
+}
+
+fun printNumber(n : int) : void = {
+    if (n != 0) then {
+        last_digit = n % 10;
+        printNumber(n / 10);
+        putChar(last_digit + 48);
+    }
+    else none;
+} where {
+    var last_digit : int
+}
+
+fun println(string : ^char) : void = {
+    x = (string : ^int);
+    while (x^ != 0) do {
+        putChar(x^);
+        x = ((x : int) + 8 : ^int);
+    };
+    putChar(10);
+} where {
+    var x : ^int
+}
+
+fun print(string : ^char) : void = {
+    x = (string : ^int);
+    while (x^ != 0) do {
+        putChar(x^);
+        x = ((x : int) + 8 : ^int);
+    };
+} where {
+    var x : ^int
+}
+
+fun initArray(array : ^[100]int) : void = {
+    i = 0;
+    while (i < 100) do {
+        number = randomNumberGenerator();
+        array^[i] = number % 100;
+        i = i + 1;
+    };
+} where {
+    var i : int
+    var number : int
+}
+
+var random_seed : int
+
+fun randomNumberGenerator() : int = {
+    random_seed = ((random_seed * 7621) + 1) % 32768;
+    random_seed;
+}
+
+fun main() : void = {
+    #Set to a random value
+    random_seed = 1;
+    print("Input characters to generate a \"random\" seed: ");
+    c = getChar();
+    while (c >= 32 & c <= 126) do {
+        random_seed = random_seed + c;
+        c = getChar();
+    };
+    initArray(^data);
+    println("Unsorted array");
+    printArray(^data, 100);
+    quickSort(^data, 0, 99);
+    println("Sorted array");
+    printArray(^data, 100);
+} where {
+    var data : [100]int
+    var c : int
+}
+
+fun putChar(c : int) : void
+fun getChar() : int
+

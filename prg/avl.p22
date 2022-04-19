@@ -1,0 +1,322 @@
+typ avl = ^avl_node
+typ avl_node = {value : int, l : avl, r : avl}
+
+fun main() : void = {
+	# Premade runs a predefined set of commands
+	premade();
+	# REPL is interactive
+	# REPL();
+	none;
+}
+
+fun REPL() : void = {
+	# Empty tree
+	tree = (nil : avl);
+	# Read from user input, stop on command x or empty string
+	while {putString("> "); getString(^cbuf); mode = cbuf[0]; mode != 'x' & (mode : int) != 0;} do {
+		num = parseInt(^cbuf[1]);
+		# Insert
+		if mode == 'i' then insert(^tree, num)
+		# Delete
+		else if mode == 'd' then delete(^tree, num)
+		# Find
+		else if mode == 'f' then {
+			if find(tree, num)
+			then putChar(('T' : int))
+			else putChar(('F' : int));
+			newLine();
+		}
+		# Print
+		else if mode == 'p' then inorder(tree)
+		else none;
+	};
+} where {
+	var tree : avl
+	var num : int
+	var mode : char
+	var cbuf : [100]char
+}
+
+fun premade() : bool = {
+	tree = (nil : avl);
+	insert(^tree, 1);
+	insert(^tree, 2);
+	insert(^tree, 3);
+	insert(^tree, 4);
+	insert(^tree, 5);
+	insert(^tree, 6);
+
+	inorder(tree);
+	putStringln("Deleting 4");
+	delete(^tree, 4);
+	inorder(tree);
+	putStringln("Deleting 6");
+	delete(^tree, 6);
+	inorder(tree);
+	find(tree, 7);
+} where {
+	var tree : avl
+}
+
+fun delete(tree : ^avl, value : int) : void = {
+	# Do nothing if tree is empty
+	if tree^ == (nil : avl)
+	then none
+	# Is current node the target
+	else if tree^^.value == value then {
+		# Save pointer so it can be free-d
+		old = tree^;
+		# If right subtree is empty, the left subtree becomes the whole tree
+		if tree^^.r == (nil : avl) then tree^ = tree^^.l
+		# Find minimum value of right subtree and use it as new root
+		else {
+			node = _delete(^tree^^.r);
+			node^.r = tree^^.r;
+			node^.l = tree^^.l;
+			tree^ = node;
+		};
+		del old;
+	}
+	# Search in either subtree
+	else if tree^^.value > value then delete(^tree^^.l, value)
+	else delete(^tree^^.r, value);
+	# Balance if needed
+	balance(tree);
+} where {
+	var old : avl
+	var node : avl
+	var hdiff : int
+}
+
+# Delete minimal element
+fun _delete(tree : ^avl) : avl = {
+	if tree^^.l == (nil : avl) then {
+		ret = tree^;
+		tree^ = ret^.r;
+		ret^.r = (nil : avl);
+	}
+	# Sorry mario, but the princess is in another castle
+	else ret = _delete(^tree^^.l);
+	# Balance if needed
+	balance(tree);
+	ret;
+} where {
+	var ret : avl
+}
+
+# Check if node is balanced and rotate if needed
+fun balance(node : ^avl) : void = {
+	if node^ == (nil : avl) then none else {
+		# Calculate difference for root node
+		root = hdiff(node^);
+		# Imbalanced l > r
+		if root <= -2 then {
+			# Check if double rotation is needed
+			if hdiff(node^^.l) * root < 0 then node^^.l = l_rotate(node^^.l) else none;
+			node^ = r_rotate(node^);
+		}
+		# Imbalanced l < r
+		else if root >= 2 then {
+			# Check if double rotation is needed
+			if hdiff(node^^.r) * root < 0 then node^^.r = r_rotate(node^^.r) else none;
+			node^ = l_rotate(node^);
+		}
+		else none;
+	};
+} where {
+	var root : int
+}
+
+# Height difference for balance calculations
+fun hdiff(node : avl) : int = {
+	if node == (nil : avl)
+	then ret = 0
+	else ret = height(node^.r) - height(node^.l);
+	ret;
+} where {
+	var ret : int
+}
+
+# Check if element is in tree
+fun find(tree : avl, value : int) : bool = {
+	if tree == (nil : avl)
+		then ret = false
+	else if tree^.value == value
+		then ret = true
+	# Check subtrees
+	else if tree^.value > value
+		then ret = find(tree^.l, value)
+		else ret = find(tree^.r, value);
+	ret;
+} where {
+	var ret : bool
+}
+
+# Wrap function for padding
+fun inorder(tree : avl) : void = _inorder(tree, 0)
+fun _inorder(tree : avl, padding : int) : void = {
+	if tree == (nil : avl) then none else {
+		# Padding for nicer output
+		{
+			i = 0;
+			while { i = i + 1; i <= padding; } do putChar((' ' : int));
+		} where {var i : int};
+		putInt(tree^.value);
+		putString(" ");
+		putString("[");
+		if tree^.l != (nil : avl) then putInt(tree^.l^.value) else none;
+		putString(" ");
+		if tree^.r != (nil : avl) then putInt(tree^.r^.value) else none;
+		putString("]");
+		newLine();
+		if tree^.l != (nil : avl) then _inorder(tree^.l, padding + 2) else none;
+		if tree^.r != (nil : avl) then _inorder(tree^.r, padding + 2) else none;
+	};
+}
+
+# Insert element into tree
+fun insert(tree : ^avl, value : int) : void = {
+	x = create_node(value);
+	if tree^ == (nil : avl)
+	then tree^ = x
+	else insert_node(tree, x);
+} where {
+	var x : avl
+}
+
+# Insert helper
+fun insert_node(root : ^avl, node : avl) : void = {
+	# Should we insert into left or right subtree
+	if root^^.value > node^.value
+	then {
+		# Left subtree
+		if root^^.l == (nil : avl)
+		then root^^.l = node
+		else insert_node(^root^^.l, node);
+	} else {
+		# Right subtree
+		if root^^.r == (nil : avl)
+		then root^^.r = node
+		else insert_node(^root^^.r, node);
+	};
+	# Balance if needed
+	balance(root);
+}
+
+fun r_rotate(node : avl) : avl = {
+	root = node^.l;
+	tmp = root^.r;
+	root^.r = node;
+	node^.l = tmp;
+	root;
+} where {
+	var root : avl
+	var tmp : avl
+}
+
+fun l_rotate(node : avl) : avl = {
+	root = node^.r;
+	tmp = root^.l;
+	root^.l = node;
+	node^.r = tmp;
+	root;
+} where {
+	var root : avl
+	var tmp : avl
+}
+
+fun height(node : avl) : int = {
+	if node == (nil : avl)
+	then h = 0
+	else {
+		a = height(node^.l);
+		b = height(node^.r);
+		if a > b
+		then h = a + 1
+		else h = b + 1;
+	};
+	h;
+} where {
+	var a : int
+	var b : int
+	var h : int
+}
+
+# Node constructor
+fun create_node(value : int) : avl = {
+	node = (new 24 : avl);
+	node^.value = value;
+	node^.l = (nil : avl);
+	node^.r = (nil : avl);
+	node;
+} where {
+	var node : avl
+}
+
+# Standard library
+fun parseInt(s : ^char) : int = {
+	ret = 0;
+	if s^ == '-'
+	then {
+		s = ((s : int) + 8 : ^char);
+		sgn = -1;
+	}
+	else sgn = 1;
+	while s^ >= '0' & s^ <= '9' do {
+		ret = ret * 10 + (s^ : int) - ('0' : int);
+		s = ((s : int) + 8 : ^char);
+	};
+	ret * sgn;
+} where {
+	var ret : int
+	var sgn : int
+}
+fun getString(s : ^[100]char) : int = {
+	count = 0;
+	c = getChar();
+	while count < 100 & c >= 32 & c <= 126 do {
+		s^[count] = (c : char);
+		count = count + 1;
+		c = getChar();
+	};
+	(s : ^[100]int)^[count] = 0;
+	count;
+} where {
+	var c : int
+	var count : int
+}
+fun putStringln(s : ^char) : int = {
+	count = putString(s);
+	newLine();
+	count;
+} where {
+	var count : int
+}
+fun putString(s : ^char) : int = {
+	count = 0;
+	x = (s : ^int);
+	while x^ != 0 do {
+		putChar(x^);
+		x = ((x : int) + 8 : ^int);
+		count = count + 1;
+	};
+	count;
+} where {
+	var x : ^int
+	var count : int
+}
+fun newLine() : void = putChar(10)
+fun putInt(x : int) : void = {
+	if x < 0
+	then {
+		x = -x;
+		putChar(('-' : int));
+	}
+	else none;
+	if x/10 > 0
+	then putInt(x/10)
+	else none;
+	putChar(x%10 + ('0': int));
+}
+fun putChar(c : int) : void
+fun getChar() : int

@@ -1,0 +1,100 @@
+
+fun main() : void = {
+    arr[0] = 6;
+    arr[1] = 4;
+    arr[2] = 9;
+    permutations(^arr, 3);
+    none;
+} where {
+    var arr : [3]int
+    var len : int
+}
+
+fun permutations(nums : ^[3]int, length : int) : void = {
+    i = 0;
+    while {i = i + 1; i <= length; } do {
+        j = -1;
+        while {j = j + 1; j < length - 1;} do {
+            tmp = nums^[j];
+            nums^[j] = nums^[j + 1];
+            nums^[j+1] = tmp;
+            printArr(nums);
+        };
+    };
+    none;
+} where {
+    var i : int
+    var j : int
+    var tmp : int
+}
+# functions for printing
+
+fun printArr(arr : ^[3]int) : void = {
+    e = -1;
+    while {e = e + 1; e < 3; } do {
+        #printInt(e);
+        print(intToStr(arr^[e]));
+        #printInt(arr^[e]);
+    };
+    putChar((10 : char));
+} where {
+    var e : int
+}
+    
+
+fun putChar(c : char) : void
+
+fun strIndex(s : ^char, i : int) : char = ((s:int)+8*i : ^char)^
+fun setChar(s : ^char, i : int, c : char) : void = {
+	((s:int)+8*i : ^char)^ = c;
+}
+
+fun print(s : ^char) : void = {
+	i = 0;
+	while {c = strIndex(s, i); i = i+1; c != (0 : char);} do {
+		putChar(c);
+	};
+} where {
+	var i : int
+	var c : char
+}
+
+fun printLn(s : ^char) : void = {
+	print(s);
+	putChar((10 : char));
+}
+
+fun intToStr(i : int) : ^char = {
+	n = log10(i);
+	string = (new (n+1) : ^char);
+	sEnd = itStr(i, string);
+	sEnd^ = (0 : char);
+	string;
+} where {
+	var string : ^char
+	var sEnd : ^char
+	var n : int
+}
+
+fun log10(i : int) : int = {
+	if i < 10 then
+		i = 0
+	else
+		i = log10(i/10) + 1;
+	i;
+}
+
+fun itStr(i : int, s : ^char) : ^char = {
+	digit = i % 10;
+	if i >= 10 then {
+		s = itStr(i/10, s);
+	} else none;
+	s^ = intToChar(digit);
+	((s : int)+8 : ^char);
+} where {
+	var digit : int
+}
+
+fun intToChar(i : int) : char = (i+('0' : int) : char)
+
+fun printInt(i : int) : void = printLn(intToStr(i))

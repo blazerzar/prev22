@@ -1,22 +1,89 @@
 var s : ^char
 fun main() : void = {
 	s = "To je testni string \"joj\"";
-	putString(s);
-	newLine();
+	putStringln(s);
 	getString(^cbuf);
-	putString((^cbuf[0] : ^char));
+	putStringln(^cbuf[0]);
+	putInt(parseInt(^cbuf[0])+1);
 	newLine();
 	i = 0;
 	while i < 10 do {
 		putInt(i);
 		newLine();
 		i = i + 1;
+		arr[i] = i;
 	};
+	b = true;
+	printf4("%s %d %s %b\n", ("print" : ^void), (12345 : ^void), ("zdruzen" : ^void), (^b : ^void));
+	printfn("%d %d %d\n%", (^arr[3] : ^^void));
 } where {
+	var b : bool
+	var arr : [10]int
 	var cbuf : [100]char
 	var i : int
 }
 
+fun printf4(format : ^char, a0 : ^void, a1 : ^void, a2 : ^void, a3 : ^void) : void = {
+	args[0] = a0;
+	args[1] = a1;
+	args[2] = a2;
+	args[3] = a3;
+	printfn(format, ^args[0]);
+} where {
+	var args : [4]^void
+}
+fun printfn(format : ^char, args : ^^void) : void = {
+	while { c = format^; c != (0 : char); } do {
+		if c == '%' then {
+			format = ((format : int) + 8 : ^char);
+			c = format^;
+			if c == 'd' then putInt((args^ : int))
+			else if c == 's' then putString((args^ : ^char))
+			else if c == 'b' then {
+				if (args^ : ^bool)^ then putChar(('T' : int))
+				else putChar(('F' : int));
+			}
+			else {
+				putChar(('%' : int));
+				format = ((format : int) - 8 : ^char);
+				args = ((args : int) - 8 : ^^void);
+			};
+			args = ((args : int) + 8 : ^^void);
+		} else if c == '\' then {
+			format = ((format : int) + 8 : ^char);
+			c = format^;
+			if c == 'n' then putChar(10)
+			else if c == 't' then putChar(9)
+			else if c == (0 : char) then format = ((format : int) - 8 : ^char)
+			else {
+				putChar(('\' : int));
+				putChar((c : int));
+			};
+		} else {
+			putChar((c : int));
+		};
+		format = ((format : int) + 8 : ^char);
+	};
+} where {
+	var c : char
+}
+fun parseInt(s : ^char) : int = {
+	ret = 0;
+	if s^ == '-'
+	then {
+		s = ((s : int) + 8 : ^char);
+		sgn = -1;
+	}
+	else sgn = 1;
+	while s^ >= '0' & s^ <= '9' do {
+		ret = ret * 10 + (s^ : int) - ('0' : int);
+		s = ((s : int) + 8 : ^char);
+	};
+	ret * sgn;
+} where {
+	var ret : int
+	var sgn : int
+}
 fun getString(s : ^[100]char) : int = {
 	count = 0;
 	c = getChar();
@@ -31,12 +98,19 @@ fun getString(s : ^[100]char) : int = {
 	var c : int
 	var count : int
 }
+fun putStringln(s : ^char) : int = {
+	count = putString(s);
+	newLine();
+	count;
+} where {
+	var count : int
+}
 fun putString(s : ^char) : int = {
 	count = 0;
 	x = (s : ^int);
 	while x^ != 0 do {
 		putChar(x^);
-		x = ((x : int) + 1 : ^int);
+		x = ((x : int) + 8 : ^int);
 		count = count + 1;
 	};
 	count;
@@ -46,6 +120,12 @@ fun putString(s : ^char) : int = {
 }
 fun newLine() : void = putChar(10)
 fun putInt(x : int) : void = {
+	if x < 0
+	then {
+		x = -x;
+		putChar(('-' : int));
+	}
+	else none;
 	if x/10 > 0
 	then putInt(x/10)
 	else none;

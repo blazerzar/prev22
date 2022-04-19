@@ -1,0 +1,53 @@
+
+# 1  2  3  4  5  6   7   8   9  10
+#---------------------------------
+# 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...
+
+# var memoTable : [100]int
+fun fibonacci(n : int) : int = {
+	i = 0;
+	while i < 100 do {
+		memoTable[i] = 0;
+		i = i + 1;
+	};
+
+	# Prva dva clena
+	memoTable[0] = 0;
+	memoTable[1] = 1;
+
+	rec_fibo(n);
+} where {
+	var i : int
+
+	# Ne bo delalo, ce ne pravilno
+	# pohandlas SL za rekurzivne klice.
+	# Globalna memoTable, nekaj vrstic visje
+	# bi ti pa morala it skozi.
+	# Also: preveri da popravis pri obeh,
+	# AstCallExpr in AstNameExpr
+
+	var memoTable : [100]int
+
+	fun rec_fibo(m : int) : int = {
+		if m < 2 then {
+			result = m;
+		} else {
+			if (memoTable[m] != 0) then {
+				result = memoTable[m];
+			} else {
+				result = rec_fibo(m-1) + rec_fibo(m-2);
+				memoTable[m] = result;
+			};
+		};
+		result;
+	} where {
+		var result : int
+	}
+}
+
+var N : int
+fun main() : int = {
+	N = 14;
+	fibonacci(N);
+}
+
