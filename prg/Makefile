@@ -1,4 +1,4 @@
-JAVA            = java
+JAVA            = java --enable-preview
 ANTLRDIR        = ../lib/antlr-4.9.3-complete.jar
 XSLTPROC	= xsltproc
 RM              = 'rm' -fr
