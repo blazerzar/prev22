@@ -57,30 +57,42 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
     }
 
     public MemTemp visit(ImcCALL call, Vector<AsmInstr> instrs) {
-        // Place arguments into memory
-        for (int i = 0; i < call.args.size(); ++i) {
-            // Put argument address
-            MemTemp offset = (new ImcCONST(call.offs.get(i))).accept(this, instrs);
-            Vector<MemTemp> defs = new Vector<>(
-                Arrays.asList(new MemTemp[]{ new MemTemp() }));
-            Vector<MemTemp> uses = new Vector<>(
-                Arrays.asList(new MemTemp[]{ offset }));
-            instrs.add(new AsmOPER("ADD `d0,$254,`s0", uses, defs, null));
+        // Compute arguments and place them into registers
+        List<MemTemp> args = new LinkedList<>();
+        for (ImcExpr arg : call.args) {
+            args.add(arg.accept(this, instrs));
+        }
 
-            // Put argument into register and then into memory
-            MemTemp arg = call.args.get(i).accept(this, instrs);
-            defs.add(0, arg);
-            instrs.add(new AsmOPER("STO `s0,`s1,0", defs, null, null));
+        // Put arguments at the end of the frame
+        for (int i = 0; i < args.size(); ++i) {
+            long offsetVal = call.offs.get(i);
+            Vector<MemTemp> uses = new Vector<>(
+                Arrays.asList(new MemTemp[]{ args.get(i) }));
+
+            // Check if offset is small enough to fit as an immediate value
+            if (offsetVal <= 255) {
+                // M[$254 + offsetVal] = $arg
+                instrs.add(new AsmOPER(
+                    String.format("STO `s0,$254,%d", offsetVal),
+                    uses, null, null
+                ));
+            } else {
+                // Put offset in a register
+                uses.add((new ImcCONST(offsetVal)).accept(this, instrs));
+
+                // M[$254 + $offset] = $arg
+                instrs.add(new AsmOPER("STO `s0,$254,`s1", uses, null, null));
+            }
         }
 
         // Call the function
         Vector<MemLabel> jumps = new Vector<>(
-                Arrays.asList(new MemLabel[]{ call.label }));
+            Arrays.asList(new MemLabel[]{ call.label }));
         instrs.add(new AsmOPER("PUSHJ $8," + call.label.name, null, null, jumps));
 
         // Return value from SP
         Vector<MemTemp> defs = new Vector<>(
-                Arrays.asList(new MemTemp[]{ new MemTemp() }));
+            Arrays.asList(new MemTemp[]{ new MemTemp() }));
         instrs.add(new AsmOPER("LDO `d0,$254,0", null, defs, null));
 
         return defs.get(0);
@@ -94,21 +106,19 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
         int[] offsets = { 0, 16, 32, 48 };
         String[] instructions = { "SETL", "INCML", "INCMH", "INCH" };
 
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < offsets.length; ++i) {
             int val = (int) (constant.value >> offsets[i] & (1L << 16) - 1);
 
             // Only save wyde if it is the first one or bigger than 0
             if (offsets[i] == 0 || val > 0) {
                 instrs.add(new AsmOPER(
                     String.format("%s `d0,%d", instructions[i], val),
-                    null,
-                    defs,
-                    null
+                    null, defs, null
                 ));
             }
         }
 
-        // Return term (register) that includes constant
+        // Return temp (register) that includes the constant
         return defs.get(0);
     }
 
@@ -136,9 +146,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
             Arrays.asList(new MemTemp[]{ dst }));
         instrs.add(new AsmOPER(
             String.format("LDA `d0,%s", name.label.name),
-            null,
-            defs,
-            null
+            null, defs, null
         ));
         return dst;
     }
@@ -168,8 +176,8 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
             }
             case NOT -> {
                 // First negate number to prevent overflow
-                instrs.add(new AsmOPER("NEG `d0,`s0", defs, defs, null));
-                instrs.add(new AsmOPER("SUB `d0,`s0,1", uses, defs, null));
+                instrs.add(new AsmOPER("NEG `d0,`s0", uses, defs, null));
+                instrs.add(new AsmOPER("SUB `d0,`s0,1", defs, defs, null));
             }
         };
 
