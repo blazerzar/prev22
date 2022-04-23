@@ -22,14 +22,10 @@ public class StmtGenerator implements ImcVisitor<Vector<AsmInstr>, Object> {
 
         // Branch to positive label if condition is nonzero
         instrs.add(new AsmOPER("BNZ `s0," + cjump.posLabel.name, uses, null,
-            new Vector<>(
-                Arrays.asList(new MemLabel[]{ cjump.posLabel }))
-        ));
-
-        // Otherwise jump to negative label
-        instrs.add(new AsmOPER("JMP " + cjump.negLabel.name, null, null,
-            new Vector<>(
-                Arrays.asList(new MemLabel[]{ cjump.negLabel }))
+            // We can jump to both labels from here
+            new Vector<>(Arrays.asList(new MemLabel[]{
+                cjump.posLabel, cjump.negLabel
+            }))
         ));
 
         return instrs;
