@@ -76,7 +76,7 @@ public class StmtGenerator implements ImcVisitor<Vector<AsmInstr>, Object> {
         if (move.dst instanceof ImcMEM) {
             Vector<MemTemp> uses = new Vector<>(
                 Arrays.asList(new MemTemp[]{ src, dst }));
-            instrs.add(new AsmOPER("STO", uses, null, null));
+            instrs.add(new AsmOPER("STO `s0,`s1,0", uses, null, null));
         } else {
             Vector<MemTemp> uses = new Vector<>(
                 Arrays.asList(new MemTemp[]{ src }));
