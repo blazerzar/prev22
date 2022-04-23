@@ -68,8 +68,17 @@ public class CodeGenerator extends AstNullVisitor<Object, Stack<MemFrame>> {
                 long charVal = (long) atomExpr.value.charAt(atomExpr.value.length() - 2);
                 yield new ImcCONST(charVal);
             }
-            case INT     -> new ImcCONST(Long.parseLong(atomExpr.value));
-            case STRING  -> {
+            case INT -> {
+                // Check if value is inside limits
+                String maxInt = "9223372036854775807";
+                if (atomExpr.value.length() > maxInt.length() ||
+                        maxInt.compareTo(atomExpr.value) == -1) {
+                    throw new Report.Error(atomExpr,
+                        atomExpr.value + " : Too big integer constant");
+                }
+                yield new ImcCONST(Long.parseLong(atomExpr.value));
+            }
+            case STRING -> {
                 // Get label of the string ...
                 MemLabel label = Memory.strings.get(atomExpr).label;
                 // ... and map it to an andress

@@ -48,7 +48,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
 
                 instrs.add(new AsmOPER("CMP `d0,`s0,`s1", uses, defs, null));
                 instrs.add(new AsmOPER(
-                    String.format("%s`d0,`s0,1", instruction),
+                    String.format("%s `d0,`s0,1", instruction),
                     defs, defs, null));
             }
         }
@@ -164,11 +164,17 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
         // Create instructions for evaluating operand expression
         MemTemp operand = unOp.subExpr.accept(this, instrs);
 
-        MemTemp dst = new MemTemp();
-         Vector<MemTemp> uses = new Vector<>(
+        // If operand is ImcCONST, use the same register for result
+        Vector<MemTemp> defs = new Vector<>();
+        if (unOp.subExpr instanceof ImcCONST) {
+            defs.add(operand);
+        } else {
+            MemTemp dst = new MemTemp();
+            defs.add(dst);
+        }
+
+        Vector<MemTemp> uses = new Vector<>(
             Arrays.asList(new MemTemp[]{ operand }));
-        Vector<MemTemp> defs = new Vector<>(
-            Arrays.asList(new MemTemp[]{ dst }));
 
         switch (unOp.oper) {
             case NEG -> {
@@ -181,7 +187,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
             }
         };
 
-        return dst;
+        return defs.get(0);
     }
 
 }
