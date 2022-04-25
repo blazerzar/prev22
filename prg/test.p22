@@ -1,8 +1,24 @@
-typ tabela = [10]int
-var a : tabela
+var cifra : int
+var x : int
 
-fun main() : int = {
-    a[0] = 42;
-    a[1];
+fun main() : void = {
+    cifra = f(cifra, g(cifra));
+    x = -42 + 3;
+
+    while i < 5 do {
+        if i % 2 == 0 then
+            i = i + 1
+        else
+            i = i + 2;
+    };
+} where {
+    var i : int
 }
+
+fun f(x : int, y : int) : int = x + y
+fun g(x : int) : int = x + 1
+
+fun binOpOr(x: bool, y: bool) : bool = x | y
+fun binOpMod(x: int, y: int) : int = x % y
+fun unOpNot(x: bool) : bool = !x
 

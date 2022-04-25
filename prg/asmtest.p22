@@ -1,0 +1,126 @@
+var global : int
+var array: [10] int
+
+fun f(x: int, y: int, b: bool): int = {
+    r = 42;
+    if b then
+        r = x + y
+    else
+        r = x * y;
+    r - 1;
+} where {
+    var r: int
+}
+
+fun g(x: int, y: int): int = {
+    b = false;
+    s = 0;
+    while i >= 4 do {
+        if b then
+            s = s + f(x + y, 2 * y, x == y)
+        else {
+            s = s + global % 7;
+            global = s;
+
+            j = 1;
+            while j < 4 do {
+                s = s + f(j, j, j > 2);
+                j = j * 2;
+            };
+        };
+
+        b = !b;
+        i = i + 1;
+    };
+
+    s;
+} where {
+    var b : bool
+    var i : int
+    var j : int
+    var s : int
+}
+
+fun global_assign(): void = {
+    global = 65535; # 2^16 - 1
+    global = -65535; # -2^16 + 1
+    global = 65536; # 2^16
+    global = ('b': int);
+}
+
+fun arg_assign(x: int): void = {
+    x = 65535; # 2^16 - 1
+    x = -65535; # -2^16 + 1
+    x = 65536; # 2^16
+    x = 10 + 8;
+}
+
+fun local_assign(): void = {
+    x = 65535; # 2^16 - 1
+    x = -65535; # -2^16 + 1
+    x = 65536; # 2^16
+    x = 10 * 8;
+} where {
+    var x : int
+}
+
+fun ptr_assign(x: ^int): void = {
+    x^ = 65535; # 2^16 - 1
+    x^ = -65535; # -2^16 + 1
+    x^ = 65536; # 2^16
+    x^ = 10 % 8;
+}
+
+fun arr_assign1(a: ^[10] int): void = {
+    a^[1] = 65535; # 2^16 - 1
+    a^[1] = -65535; # -2^16 + 1
+    a^[1] = 65536; # 2^16
+    a^[1] = 10 % 8;
+}
+
+fun arr_assign2(a: ^[10] int, i: int): void = {
+    a^[i] = 65535; # 2^16 - 1
+    a^[i] = -65535; # -2^16 + 1
+    a^[i] = 65536; # 2^16
+    a^[i] = 10 - 8;
+}
+
+fun h(x: int): void = none
+
+fun par_assign(x: int):void = {
+    h(65535); # 2^16 - 1
+    h(-65535); # -2^16 + 1
+    h(65536);
+    h(10 % 8);
+    h(x);
+}
+
+typ rec = { x: int, y: ^int, z: ^char, w: ^rec, q: ^^rec, t: { x: ^rec } }
+
+fun rec_assign(r: ^rec): void = {
+    r^.x = 1;
+    r^.y = ^global;
+    r^.z = "asdf";
+    r^.w = r;
+    r^.q = (0: ^^rec);
+    r^.t.x = r;
+}
+
+fun main(): void = {
+    global_assign();
+    arg_assign(global);
+    local_assign();
+    ptr_assign(^global);
+    arr_assign1(^array);
+    arr_assign2(^array, 3);
+
+    c = 'a';
+    par_assign((c: int));
+
+    r = (new 100: ^rec);
+    rec_assign(r);
+} where {
+    var c: char
+    var r: ^rec
+}
+

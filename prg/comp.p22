@@ -1,0 +1,6 @@
+fun main() : bool = 1 == 2
+fun lth() : bool = 1 < 2
+fun gth() : bool = 1 > 2
+fun leq() : bool = 1 <= 2
+fun geq() : bool = 1 >= 2
+fun neq() : bool = 1 != 2
