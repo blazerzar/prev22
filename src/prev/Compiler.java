@@ -13,6 +13,7 @@ import prev.phase.memory.*;
 import prev.phase.imcgen.*;
 import prev.phase.imclin.*;
 import prev.phase.asmgen.*;
+import prev.phase.livean.*;
 
 /**
  * The compiler.
@@ -22,7 +23,7 @@ public class Compiler {
 	// COMMAND LINE ARGUMENTS
 
 	/** All valid phases of the compiler. */
-	private static final String phases = "none|lexan|synan|abstr|seman|memory|imcgen|imclin|asmgen";
+	private static final String phases = "none|lexan|synan|abstr|seman|memory|imcgen|imclin|asmgen|livean";
 
 	/** Values of command line arguments. */
 	private static HashMap<String, String> cmdLine = new HashMap<String, String>();
@@ -189,6 +190,14 @@ public class Compiler {
 					asmgen.log();
 				}
 				if (Compiler.cmdLineArgValue("--target-phase").equals("asmgen"))
+					break;
+
+				// Liveness analysis.
+				try (LiveAn livean = new LiveAn()) {
+					livean.compLifetimes();
+					livean.log();
+				}
+				if (Compiler.cmdLineArgValue("--target-phase").equals("livean"))
 					break;
 
 			}
