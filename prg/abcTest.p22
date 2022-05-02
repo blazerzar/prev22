@@ -1,0 +1,21 @@
+var N : int
+
+fun main() : int = {
+    N = 42;
+    f(2);
+}
+
+fun f(c : int) : int = {
+    a = 0;
+
+    while a < N do {
+        b = a + 1;
+        c = c + b;
+        a = b * 2;
+    };
+
+    c;
+} where {
+    var a : int
+    var b : int
+}
