@@ -70,13 +70,12 @@ public class CodeGenerator extends AstNullVisitor<Object, Stack<MemFrame>> {
             }
             case INT -> {
                 // Check if value is inside limits
-                String maxInt = "9223372036854775807";
-                if (atomExpr.value.length() > maxInt.length() ||
-                        maxInt.compareTo(atomExpr.value) == -1) {
+                try {
+                    yield new ImcCONST(Long.parseLong(atomExpr.value));
+                } catch (NumberFormatException e) {
                     throw new Report.Error(atomExpr,
-                        atomExpr.value + " : Too big integer constant");
+                        atomExpr.value + " : Invalid integer constant");
                 }
-                yield new ImcCONST(Long.parseLong(atomExpr.value));
             }
             case STRING -> {
                 // Get label of the string ...
