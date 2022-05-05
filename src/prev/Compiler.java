@@ -14,6 +14,7 @@ import prev.phase.imcgen.*;
 import prev.phase.imclin.*;
 import prev.phase.asmgen.*;
 import prev.phase.livean.*;
+import prev.phase.regall.*;
 
 /**
  * The compiler.
@@ -23,7 +24,7 @@ public class Compiler {
 	// COMMAND LINE ARGUMENTS
 
 	/** All valid phases of the compiler. */
-	private static final String phases = "none|lexan|synan|abstr|seman|memory|imcgen|imclin|asmgen|livean";
+	private static final String phases = "none|lexan|synan|abstr|seman|memory|imcgen|imclin|asmgen|livean|regall";
 
 	/** Values of command line arguments. */
 	private static HashMap<String, String> cmdLine = new HashMap<String, String>();
@@ -90,117 +91,131 @@ public class Compiler {
 							continue;
 						}
 					}
-					Report.warning("Command line argument '" + args[argc] + "' ignored.");
-				} else {
-					// Source file name.
-					if (cmdLine.get("--src-file-name") == null) {
-						cmdLine.put("--src-file-name", args[argc]);
-					} else {
-						Report.warning("Source file '" + args[argc] + "' ignored.");
-					}
-				}
-			}
-			if (cmdLine.get("--src-file-name") == null) {
-				throw new Report.Error("Source file not specified.");
-			}
-			if (cmdLine.get("--dst-file-name") == null) {
-				cmdLine.put("--dst-file-name", cmdLine.get("--src-file-name").replaceFirst("\\.[^./]*$", "") + ".mms");
-			}
-			if ((cmdLine.get("--target-phase") == null) || (cmdLine.get("--target-phase").equals("all"))) {
-				cmdLine.put("--target-phase", phases.replaceFirst("^.*\\|", ""));
-			}
-
-			// Compilation process carried out phase by phase.
-			while (true) {
-
-				// Lexical analysis.
-				if (Compiler.cmdLineArgValue("--target-phase").equals("lexan"))
-					try (LexAn lexan = new LexAn()) {
-						while (lexan.lexer.nextToken().getType() != Token.EOF) {
+						if (args[argc].matches("--nregs=[0-9]+")) {
+							if (cmdLine.get("--nregs") == null) {
+								cmdLine.put("--nregs", args[argc].replaceFirst("^[^=]*=", ""));
+								continue;
+							}
 						}
-						break;
+						Report.warning("Command line argument '" + args[argc] + "' ignored.");
+					} else {
+						// Source file name.
+						if (cmdLine.get("--src-file-name") == null) {
+							cmdLine.put("--src-file-name", args[argc]);
+						} else {
+							Report.warning("Source file '" + args[argc] + "' ignored.");
+						}
 					}
-
-				// Syntax analysis.
-				try (LexAn lexan = new LexAn(); SynAn synan = new SynAn(lexan)) {
-					SynAn.tree = synan.parser.source();
-					synan.log(SynAn.tree);
 				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("synan"))
-					break;
-
-				// Abstract syntax tree construction.
-				try (Abstr abstr = new Abstr()) {
-					Abstr.tree = SynAn.tree.ast;
-					AbsLogger logger = new AbsLogger(abstr.logger);
-					Abstr.tree.accept(logger, "Decls");
+				if (cmdLine.get("--src-file-name") == null) {
+					throw new Report.Error("Source file not specified.");
 				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("abstr"))
-					break;
-
-				// Semantic analysis.
-				try (SemAn seman = new SemAn()) {
-					Abstr.tree.accept(new NameResolver(), null);
-					Abstr.tree.accept(new TypeResolver(), null);
-					Abstr.tree.accept(new AddrResolver(), null);
-					AbsLogger logger = new AbsLogger(seman.logger);
-					logger.addSubvisitor(new SemLogger(seman.logger));
-					Abstr.tree.accept(logger, "Decls");
+				if (cmdLine.get("--dst-file-name") == null) {
+					cmdLine.put("--dst-file-name",
+							cmdLine.get("--src-file-name").replaceFirst("\\.[^./]*$", "") + ".mms");
 				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("seman"))
-					break;
-
-				// Memory layout.
-				try (Memory memory = new Memory()) {
-					Abstr.tree.accept(new MemEvaluator(), null);
-					AbsLogger logger = new AbsLogger(memory.logger);
-					logger.addSubvisitor(new SemLogger(memory.logger));
-					logger.addSubvisitor(new MemLogger(memory.logger));
-					Abstr.tree.accept(logger, "Decls");
+				if ((cmdLine.get("--target-phase") == null) || (cmdLine.get("--target-phase").equals("all"))) {
+					cmdLine.put("--target-phase", phases.replaceFirst("^.*\\|", ""));
 				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("memory"))
-					break;
 
-				// Intermediate code generation.
-				try (ImcGen imcgen = new ImcGen()) {
-					Abstr.tree.accept(new CodeGenerator(), null);
-					AbsLogger logger = new AbsLogger(imcgen.logger);
-					logger.addSubvisitor(new SemLogger(imcgen.logger));
-					logger.addSubvisitor(new MemLogger(imcgen.logger));
-					logger.addSubvisitor(new ImcLogger(imcgen.logger));
-					Abstr.tree.accept(logger, "Decls");
+				// Compilation process carried out phase by phase.
+				while (true) {
+
+					// Lexical analysis.
+					if (Compiler.cmdLineArgValue("--target-phase").equals("lexan"))
+						try (LexAn lexan = new LexAn()) {
+							while (lexan.lexer.nextToken().getType() != Token.EOF) {
+							}
+							break;
+						}
+
+					// Syntax analysis.
+					try (LexAn lexan = new LexAn(); SynAn synan = new SynAn(lexan)) {
+						SynAn.tree = synan.parser.source();
+						synan.log(SynAn.tree);
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("synan"))
+						break;
+
+					// Abstract syntax tree construction.
+					try (Abstr abstr = new Abstr()) {
+						Abstr.tree = SynAn.tree.ast;
+						AbsLogger logger = new AbsLogger(abstr.logger);
+						Abstr.tree.accept(logger, "Decls");
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("abstr"))
+						break;
+
+					// Semantic analysis.
+					try (SemAn seman = new SemAn()) {
+						Abstr.tree.accept(new NameResolver(), null);
+						Abstr.tree.accept(new TypeResolver(), null);
+						Abstr.tree.accept(new AddrResolver(), null);
+						AbsLogger logger = new AbsLogger(seman.logger);
+						logger.addSubvisitor(new SemLogger(seman.logger));
+						Abstr.tree.accept(logger, "Decls");
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("seman"))
+						break;
+
+					// Memory layout.
+					try (Memory memory = new Memory()) {
+						Abstr.tree.accept(new MemEvaluator(), null);
+						AbsLogger logger = new AbsLogger(memory.logger);
+						logger.addSubvisitor(new SemLogger(memory.logger));
+						logger.addSubvisitor(new MemLogger(memory.logger));
+						Abstr.tree.accept(logger, "Decls");
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("memory"))
+						break;
+
+					// Intermediate code generation.
+					try (ImcGen imcgen = new ImcGen()) {
+						Abstr.tree.accept(new CodeGenerator(), null);
+						AbsLogger logger = new AbsLogger(imcgen.logger);
+						logger.addSubvisitor(new SemLogger(imcgen.logger));
+						logger.addSubvisitor(new MemLogger(imcgen.logger));
+						logger.addSubvisitor(new ImcLogger(imcgen.logger));
+						Abstr.tree.accept(logger, "Decls");
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("imcgen"))
+						break;
+
+					// Linearization of intermediate code.
+					try (ImcLin imclin = new ImcLin()) {
+						Abstr.tree.accept(new ChunkGenerator(), null);
+						imclin.log();
+
+						// Interpreter interpreter = new Interpreter(ImcLin.dataChunks(), ImcLin.codeChunks());
+						// System.out.println("EXIT CODE: " + interpreter.run("_main"));
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("imclin"))
+						break;
+
+					// Machine code generation.
+					try (AsmGen asmgen = new AsmGen()) {
+						asmgen.genAsmCodes();
+						asmgen.log();
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("asmgen"))
+						break;
+
+					// Liveness analysis.
+					try (LiveAn livean = new LiveAn()) {
+						livean.compLifetimes();
+						livean.log();
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("livean"))
+						break;
+
+					// Register allocation.
+					try (RegAll regall = new RegAll(Integer.decode(cmdLine.get("--nregs")))) {
+						regall.allocate();
+						regall.log();
+					}
+					if (Compiler.cmdLineArgValue("--target-phase").equals("regall"))
+						break;
 				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("imcgen"))
-					break;
-
-				// Linearization of intermediate code.
-				try (ImcLin imclin = new ImcLin()) {
-					Abstr.tree.accept(new ChunkGenerator(), null);
-					imclin.log();
-
-					// Interpreter interpreter = new Interpreter(ImcLin.dataChunks(), ImcLin.codeChunks());
-					// System.out.println("EXIT CODE: " + interpreter.run("_main"));
-				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("imclin"))
-					break;
-
-				// Machine code generation.
-				try (AsmGen asmgen = new AsmGen()) {
-					asmgen.genAsmCodes();
-					asmgen.log();
-				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("asmgen"))
-					break;
-
-				// Liveness analysis.
-				try (LiveAn livean = new LiveAn()) {
-					livean.compLifetimes();
-					livean.log();
-				}
-				if (Compiler.cmdLineArgValue("--target-phase").equals("livean"))
-					break;
-
-			}
 
 			Report.info("Done.");
 		} catch (Report.Error __) {
