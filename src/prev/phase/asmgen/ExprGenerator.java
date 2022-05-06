@@ -6,11 +6,18 @@ import prev.data.imc.code.expr.*;
 import prev.data.imc.visitor.*;
 import prev.data.asm.*;
 import prev.common.report.*;
+import prev.Compiler;
 
 /**
  * Machine code generator for expressions.
  */
 public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
+
+    private final int nregs;
+
+    public ExprGenerator() {
+        this.nregs = Integer.decode(Compiler.cmdLineArgValue("--nregs"));
+    }
 
     public MemTemp visit(ImcBINOP binOp, Vector<AsmInstr> instrs) {
         // Create instructions for evaluating operands expressions
@@ -88,7 +95,9 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
         // Call the function
         Vector<MemLabel> jumps = new Vector<>(
             Arrays.asList(new MemLabel[]{ call.label }));
-        instrs.add(new AsmOPER("PUSHJ $8," + call.label.name, null, null, jumps));
+        instrs.add(new AsmOPER(
+            String.format("PUSHJ $%s,%s", nregs, call.label.name),
+            null, null, jumps));
 
         // Return value from SP
         Vector<MemTemp> defs = new Vector<>(

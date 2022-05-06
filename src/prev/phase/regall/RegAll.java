@@ -11,18 +11,21 @@ import prev.phase.asmgen.*;
  * Register allocation.
  */
 public class RegAll extends Phase {
-	
+
 	/** Mapping of temporary variables to registers. */
 	public final HashMap<MemTemp, Integer> tempToReg = new HashMap<MemTemp, Integer>();
 
+	private final int nregs;
+
 	public RegAll(int nregs) {
 		super("regall");
+		this.nregs = nregs;
 	}
 
 	public void allocate() {
 		// TODO
 	}
-	
+
 	public void log() {
 		if (logger == null)
 			return;
