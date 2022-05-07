@@ -23,67 +23,76 @@ public class LiveAn extends Phase {
 	public void compLifetimes() {
 		// Do liveness analysis for each function
 		for (Code code : AsmGen.codes) {
-			Vector<AsmInstr> instrs = code.instrs;
+			compLifetimesFun(code);
+		}
+	}
 
-			// Previous in and out sizes
-			int[] sizesIn = new int[instrs.size()];
-			int[] sizesOut = new int[instrs.size()];
+	public void compLifetimesFun(Code code) {
+		Vector<AsmInstr> instrs = code.instrs;
 
-			Map<String, AsmInstr> asmLabels = new HashMap<>();
+		// Previous in and out sizes
+		int[] sizesIn = new int[instrs.size()];
+		int[] sizesOut = new int[instrs.size()];
 
-			// Add use to in of every instruction
+		Map<String, AsmInstr> asmLabels = new HashMap<>();
+
+		// Add use to in of every instruction
+		for (int i = 0; i < instrs.size(); ++i) {
+			AsmInstr instr = instrs.get(i);
+
+			// Clear in and out
+			((AsmOPER) instr).removeAllFromIn();
+			((AsmOPER) instr).removeAllFromOut();
+
+			instr.addInTemps(new HashSet<>(instr.uses()));
+			sizesIn[i] = instr.in().size();
+
+			// Save instruction if it is a label
+			if (instr instanceof AsmLABEL) {
+				asmLabels.put(instr.toString(), instr);
+			}
+		}
+
+		boolean converged = false;
+
+		do {
+			converged = true;
+
+			// Update ins and outs
 			for (int i = 0; i < instrs.size(); ++i) {
 				AsmInstr instr = instrs.get(i);
-				instr.addInTemps(new HashSet<>(instr.uses()));
-				sizesIn[i] = instr.in().size();
 
-				// Save instruction if it is a label
-				if (instr instanceof AsmLABEL) {
-					asmLabels.put(instr.toString(), instr);
-				}
-			}
+				// Add out \ def
+				HashSet<MemTemp> outWithoutDef = new HashSet<>(instr.out());
+				outWithoutDef.removeAll(instr.defs());
+				instr.addInTemps(outWithoutDef);
 
-			boolean converged = false;
+				if (i + 1 < instrs.size()) {
+					// If not the last instr, add in of the next instr
+					instr.addOutTemp(instrs.get(i + 1).in());
 
-			do {
-				converged = true;
-
-				// Update ins and outs
-				for (int i = 0; i < instrs.size(); ++i) {
-					AsmInstr instr = instrs.get(i);
-
-					// Add out \ def
-					HashSet<MemTemp> outWithoutDef = new HashSet<>(instr.out());
-					outWithoutDef.removeAll(instr.defs());
-					instr.addInTemps(outWithoutDef);
-
-					if (i + 1 < instrs.size()) {
-						// If not the last instr, add in of the next instr
-						instr.addOutTemp(instrs.get(i + 1).in());
-
-						// Add in of every jump successor (not for function calls)
-						if (!instr.toString().contains("PUSHJ")) {
-							for (MemLabel label : instr.jumps()) {
-								instr.addOutTemp(
-									asmLabels.get(label.name).in()
-								);
-							}
+					// Add in of every jump successor (not for function calls)
+					if (!instr.toString().contains("PUSHJ")) {
+						for (MemLabel label : instr.jumps()) {
+							instr.addOutTemp(
+								asmLabels.get(label.name).in()
+							);
 						}
 					}
-
-					converged &= instr.in().size() == sizesIn[i] &&
-								 instr.out().size() == sizesOut[i];
 				}
 
-				if (!converged) {
-					// Save new sizes
-					for (int i = 0; i < instrs.size(); ++i) {
-						sizesIn[i] = instrs.get(i).in().size();
-						sizesOut[i] = instrs.get(i).out().size();
-					}
+				converged &= instr.in().size() == sizesIn[i] &&
+							 instr.out().size() == sizesOut[i];
+			}
+
+			if (!converged) {
+				// Save new sizes
+				for (int i = 0; i < instrs.size(); ++i) {
+					sizesIn[i] = instrs.get(i).in().size();
+					sizesOut[i] = instrs.get(i).out().size();
 				}
-			} while (!converged);
-		}
+			}
+		} while (!converged);
 	}
 
 	public void log() {
