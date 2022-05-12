@@ -1,7 +1,7 @@
 fun main() : void = {
     putInt(fibRec(10));
     putChar(10);
-    putInt(fibDyn(20));
+    putInt(fibDyn(10));
     putChar(10);
 }
 

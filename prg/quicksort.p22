@@ -6,7 +6,7 @@ fun swap(a : ^int, b : ^int) : void = {
     var t : int
 }
 
-fun partition(array : ^[100]int, low : int, high : int) : int = {
+fun partition(array : ^[25]int, low : int, high : int) : int = {
     pivot = array^[high];
     i = (low - 1);
     j = low;
@@ -26,7 +26,7 @@ fun partition(array : ^[100]int, low : int, high : int) : int = {
     var j : int
 }
 
-fun quickSort(array : ^[100]int, low : int, high : int) : void = {
+fun quickSort(array : ^[25]int, low : int, high : int) : void = {
     if (low < high) then {
         pi = partition(array, low, high);
         quickSort(array, low, pi - 1);
@@ -37,7 +37,7 @@ fun quickSort(array : ^[100]int, low : int, high : int) : void = {
     var pi : int
 }
 
-fun printArray(array : ^[100]int, size : int) : void = {
+fun printArray(array : ^[25]int, size : int) : void = {
     putChar(91);
     i = 0;
     while (i < size) do {
@@ -91,11 +91,11 @@ fun print(string : ^char) : void = {
     var x : ^int
 }
 
-fun initArray(array : ^[100]int) : void = {
+fun initArray(array : ^[25]int) : void = {
     i = 0;
-    while (i < 100) do {
+    while (i < 25) do {
         number = randomNumberGenerator();
-        array^[i] = number % 100;
+        array^[i] = number % 25;
         i = i + 1;
     };
 } where {
@@ -113,7 +113,6 @@ fun randomNumberGenerator() : int = {
 fun main() : void = {
     #Set to a random value
     random_seed = 1;
-    print("Input characters to generate a \"random\" seed: ");
     c = getChar();
     while (c >= 32 & c <= 126) do {
         random_seed = random_seed + c;
@@ -121,12 +120,12 @@ fun main() : void = {
     };
     initArray(^data);
     println("Unsorted array");
-    printArray(^data, 100);
-    quickSort(^data, 0, 99);
+    printArray(^data, 25);
+    quickSort(^data, 0, 24);
     println("Sorted array");
-    printArray(^data, 100);
+    printArray(^data, 25);
 } where {
-    var data : [100]int
+    var data : [25]int
     var c : int
 }
 

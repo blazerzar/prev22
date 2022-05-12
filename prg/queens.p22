@@ -1,40 +1,70 @@
 var result : int
 var N : int
+var printed : bool
 
 fun main() : void = {
     N = 8;
+    printed = false;
     result = {
         queens(^positions, 0);
     } where {
         var positions : [8]int
     };
-    putInt(N);
-    putChar(10);
     putInt(result);
     putChar(10);
 }
 
+fun printBoard(positions : ^[8]int) : void = {
+    j = 0;
+    while j < 2 * N + 1 do {
+        putChar(('-' : int));
+        j = j + 1;
+    };
+    putChar(10);
+
+    i = 0;
+    while i < N do {
+        j = 0;
+        putChar(('|' : int));
+        while j < N do {
+            if positions^[j] == i then
+                putChar(('X' : int))
+            else
+                putChar((' ' : int));
+            putChar(('|' : int));
+            j = j + 1;
+        };
+        putChar(10);
+
+        j = 0;
+        while j < 2 * N + 1 do {
+            putChar(('-' : int));
+            j = j + 1;
+        };
+        putChar(10);
+
+        i = i + 1;
+    };
+
+} where {
+    var i : int
+    var j : int
+}
+
 fun queens(positions : ^[8]int, currentQueen : int) : int = {
-    putChar(('N': int));
-    putChar((' ': int));
-    putInt(N);
-    putChar(10);
-    putChar(('q': int));
-    putChar((' ': int));
-    putInt(currentQueen);
-    putChar(10);
-    if currentQueen == N then
+    if currentQueen == N then {
         # All queens have been placed
-        result = 1
-    else {
+        if printed == false then {
+            printBoard(positions);
+            printed = true;
+        } else none;
+        result = 1;
+    } else {
         i = 0;
         result = 0;
 
         # Try to place queen on all rows
-        putInt(i);
-        putInt(N);
         while i < N do {
-            putChar(97);
             valid = true;
             j = 0;
 

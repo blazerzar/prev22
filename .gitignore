@@ -2,6 +2,8 @@
 
 prg/*.xml
 prg/*.html
+prg/*.mms
+prg/*.mmo
 
 PrevLexer.java
 PrevParser.java
