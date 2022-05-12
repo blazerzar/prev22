@@ -119,8 +119,9 @@ public class All {
         // getChar
         instrs.add("_getChar\tLDA\t$255,Arg");
         instrs.add("\t\tTRAP\t0,Fgets,StdIn");
-        instrs.add("\t\tLDB\t$0,$255,0");
-        instrs.add("\t\tSTB\t$0,$254,8");
+        instrs.add("\t\tLDA\t$0,InBuf");
+        instrs.add("\t\tLDB\t$0,$0,0");
+        instrs.add("\t\tSTO\t$0,$254,0");
         instrs.add("\t\tPOP\t0,0");
 
         // putChar
@@ -153,7 +154,7 @@ public class All {
         // Save memory for reading and printing a character
         staticData.add("OutBuf\t\tBYTE\t0,0");
         staticData.add("InBuf\t\tBYTE\t0");
-        staticData.add("Arg\t\tOCTA\tInBuf,1");
+        staticData.add("Arg\t\tOCTA\tInBuf,2");
         dataSize += 24;
 
         for (LinDataChunk data : ImcLin.dataChunks()) {
@@ -163,6 +164,7 @@ public class All {
                                         .replaceAll("[\\[\\] ]", "");
                 staticData.add(String.format("%s\t\tOCTA\t%s,0",
                                             data.label.name, fixedString));
+                dataSize += data.size;
             } else if (data.size > 8) {
                 // Non primitive
                 staticData.add(data.label.name + "\t\tOCTA");
