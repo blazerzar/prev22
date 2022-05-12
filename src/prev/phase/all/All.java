@@ -2,6 +2,7 @@ package prev.phase.all;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Arrays;
 import java.io.PrintWriter;
 import java.io.IOException;
 
@@ -35,7 +36,6 @@ public class All {
         // Write output file
         try (PrintWriter writer = new PrintWriter(filename, "UTF-8")) {
             // Static data
-
             for (String instr : staticData) {
                 writer.println(instr);
             }
@@ -148,8 +148,7 @@ public class All {
     private List<String> createStaticData() {
         List<String> staticData = new LinkedList<>();
 
-        staticData.add("\t\tLOC\tData_Segment");
-        staticData.add("\t\tGREG\t@");
+        staticData.add("\t\tLOC\tData_Segment\n");
 
         // Save memory for reading and printing a character
         staticData.add("OutBuf\t\tBYTE\t0,0");
@@ -160,10 +159,9 @@ public class All {
         for (LinDataChunk data : ImcLin.dataChunks()) {
             if (data.init != null) {
                 // String
-                String fixedString = data.init
-                                        .replaceAll("\\\\", "\\\\\\\\")
-                                        .replaceAll("\\\"", "\\\\\"");
-                staticData.add(String.format("%s\t\tOCTA\t\"%s\",0",
+                String fixedString = Arrays.toString(data.init.getBytes())
+                                        .replaceAll("[\\[\\] ]", "");
+                staticData.add(String.format("%s\t\tOCTA\t%s,0",
                                             data.label.name, fixedString));
             } else if (data.size > 8) {
                 // Non primitive
