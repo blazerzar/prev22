@@ -21,7 +21,7 @@ public class StmtGenerator implements ImcVisitor<Vector<AsmInstr>, Object> {
             Arrays.asList(new MemTemp[]{ cond }));
 
         // Branch to positive label if condition is nonzero
-        instrs.add(new AsmOPER("BNZ `s0," + cjump.posLabel.name, uses, null,
+        instrs.add(new AsmOPER("\t\tBNZ\t`s0," + cjump.posLabel.name, uses, null,
             // We can jump to both labels from here
             new Vector<>(Arrays.asList(new MemLabel[]{
                 cjump.posLabel, cjump.negLabel
@@ -40,7 +40,7 @@ public class StmtGenerator implements ImcVisitor<Vector<AsmInstr>, Object> {
 
     public Vector<AsmInstr> visit(ImcJUMP jump, Object arg) {
         Vector<AsmInstr> instrs = new Vector<>();
-        instrs.add(new AsmOPER("JMP " + jump.label.name, null, null,
+        instrs.add(new AsmOPER("\t\tJMP\t" + jump.label.name, null, null,
             new Vector<>(Arrays.asList(new MemLabel[]{ jump.label }))
         ));
         return instrs;
@@ -71,13 +71,13 @@ public class StmtGenerator implements ImcVisitor<Vector<AsmInstr>, Object> {
         if (move.dst instanceof ImcMEM) {
             Vector<MemTemp> uses = new Vector<>(
                 Arrays.asList(new MemTemp[]{ src, dst }));
-            instrs.add(new AsmOPER("STO `s0,`s1,0", uses, null, null));
+            instrs.add(new AsmOPER("\t\tSTO\t`s0,`s1,0", uses, null, null));
         } else {
             Vector<MemTemp> uses = new Vector<>(
                 Arrays.asList(new MemTemp[]{ src }));
             Vector<MemTemp> defs = new Vector<>(
                 Arrays.asList(new MemTemp[]{ dst }));
-            instrs.add(new AsmMOVE("SET `d0,`s0", uses, defs));
+            instrs.add(new AsmMOVE("\t\tSET\t`d0,`s0", uses, defs));
         }
 
         return instrs;

@@ -15,6 +15,7 @@ import prev.phase.imclin.*;
 import prev.phase.asmgen.*;
 import prev.phase.livean.*;
 import prev.phase.regall.*;
+import prev.phase.all.*;
 
 /**
  * The compiler.
@@ -24,7 +25,7 @@ public class Compiler {
 	// COMMAND LINE ARGUMENTS
 
 	/** All valid phases of the compiler. */
-	private static final String phases = "none|lexan|synan|abstr|seman|memory|imcgen|imclin|asmgen|livean|regall";
+	private static final String phases = "none|lexan|synan|abstr|seman|memory|imcgen|imclin|asmgen|livean|regall|all";
 
 	/** Values of command line arguments. */
 	private static HashMap<String, String> cmdLine = new HashMap<String, String>();
@@ -215,6 +216,12 @@ public class Compiler {
 					}
 					if (Compiler.cmdLineArgValue("--target-phase").equals("regall"))
 						break;
+
+					// Putting it all together.
+					All all = new All();
+					all.finishFuns();
+					all.createFile(Compiler.cmdLineArgValue("--dst-file-name"));
+					break;
 				}
 
 			Report.info("Done.");

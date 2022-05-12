@@ -1,0 +1,29 @@
+fun main(): int = {
+    putInt(factorial(8));
+    putChar(10);
+    0;
+}
+
+fun factorial(x: int): int = {
+    if x == 1 then
+        res = 1
+    else
+        res = x * factorial(x - 1);
+    res;
+} where {
+    var res: int
+}
+
+fun putInt(x : int) : void = {
+	if x < 0
+	then {
+		x = -x;
+		putChar(('-' : int));
+	}
+	else none;
+	if x/10 > 0
+	then putInt(x/10)
+	else none;
+	putChar(x%10 + ('0': int));
+}
+fun putChar(c : int) : void

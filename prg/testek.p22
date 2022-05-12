@@ -1,9 +1,10 @@
 var name : ^char
 
 fun main() : void = {
-	# name = "Hello World";
-	putStringln("Hello ");
-	none;
+    name = "Testing";
+	putChar(97);
+	putChar(10);
+    none;
 }
 
 fun parseInt(s : ^char) : int = {

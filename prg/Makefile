@@ -15,5 +15,5 @@ NREGS = 8
 .PHONY  : clean
 clean   :
 	$(RM) *~
-	$(RM) *xml *html
+	$(RM) *xml *html *mms
 

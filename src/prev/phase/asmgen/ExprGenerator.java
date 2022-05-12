@@ -33,14 +33,14 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
         switch (binOp.oper) {
             case OR, AND, ADD, SUB, MUL, DIV -> {
                 instrs.add(new AsmOPER(
-                    String.format("%s `d0,`s0,`s1", binOp.oper.name()),
+                    String.format("\t\t%s\t`d0,`s0,`s1", binOp.oper.name()),
                     uses, defs, null
                 ));
             }
             case MOD -> {
                 // After division the remainder is in register rR
-                instrs.add(new AsmOPER("DIV `d0,`s0,`s1", uses, defs, null));
-                instrs.add(new AsmOPER("GET `d0,rR", null, defs, null));
+                instrs.add(new AsmOPER("\t\tDIV\t`d0,`s0,`s1", uses, defs, null));
+                instrs.add(new AsmOPER("\t\tGET\t`d0,rR", null, defs, null));
             }
             case default -> {
                 String instruction = switch (binOp.oper) {
@@ -53,9 +53,9 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
                     default  -> throw new Report.InternalError();
                 };
 
-                instrs.add(new AsmOPER("CMP `d0,`s0,`s1", uses, defs, null));
+                instrs.add(new AsmOPER("\t\tCMP\t`d0,`s0,`s1", uses, defs, null));
                 instrs.add(new AsmOPER(
-                    String.format("%s `d0,`s0,1", instruction),
+                    String.format("\t\t%s\t`d0,`s0,1", instruction),
                     defs, defs, null));
             }
         }
@@ -80,7 +80,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
             if (offsetVal <= 255) {
                 // M[$254 + offsetVal] = $arg
                 instrs.add(new AsmOPER(
-                    String.format("STO `s0,$254,%d", offsetVal),
+                    String.format("\t\tSTO\t`s0,$254,%d", offsetVal),
                     uses, null, null
                 ));
             } else {
@@ -88,7 +88,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
                 uses.add((new ImcCONST(offsetVal)).accept(this, instrs));
 
                 // M[$254 + $offset] = $arg
-                instrs.add(new AsmOPER("STO `s0,$254,`s1", uses, null, null));
+                instrs.add(new AsmOPER("\t\tSTO\t`s0,$254,`s1", uses, null, null));
             }
         }
 
@@ -96,13 +96,13 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
         Vector<MemLabel> jumps = new Vector<>(
             Arrays.asList(new MemLabel[]{ call.label }));
         instrs.add(new AsmOPER(
-            String.format("PUSHJ $%s,%s", nregs, call.label.name),
+            String.format("\t\tPUSHJ\t$%s,%s", nregs, call.label.name),
             null, null, jumps));
 
         // Return value from SP
         Vector<MemTemp> defs = new Vector<>(
             Arrays.asList(new MemTemp[]{ new MemTemp() }));
-        instrs.add(new AsmOPER("LDO `d0,$254,0", null, defs, null));
+        instrs.add(new AsmOPER("\t\tLDO\t`d0,$254,0", null, defs, null));
 
         return defs.get(0);
     }
@@ -121,7 +121,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
             // Only save wyde if it is the first one or bigger than 0
             if (offsets[i] == 0 || val > 0) {
                 instrs.add(new AsmOPER(
-                    String.format("%s `d0,%d", instructions[i], val),
+                    String.format("\t\t%s\t`d0,%d", instructions[i], val),
                     null, defs, null
                 ));
             }
@@ -143,7 +143,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
             Arrays.asList(new MemTemp[]{ dst }));
 
         // TEMP(dst) <- M[TEMP(src) + 0]
-        instrs.add(new AsmOPER("LDO `d0,`s0,0", uses, defs, null));
+        instrs.add(new AsmOPER("\t\tLDO\t`d0,`s0,0", uses, defs, null));
 
         return dst;
     }
@@ -154,7 +154,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
         Vector<MemTemp> defs = new Vector<>(
             Arrays.asList(new MemTemp[]{ dst }));
         instrs.add(new AsmOPER(
-            String.format("LDA `d0,%s", name.label.name),
+            String.format("\t\tLDA\t`d0,%s", name.label.name),
             null, defs, null
         ));
         return dst;
@@ -187,12 +187,12 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
 
         switch (unOp.oper) {
             case NEG -> {
-                instrs.add(new AsmOPER("NEG `d0,`s0", uses, defs, null));
+                instrs.add(new AsmOPER("\t\tNEG\t`d0,`s0", uses, defs, null));
             }
             case NOT -> {
                 // First negate number to prevent overflow
-                instrs.add(new AsmOPER("NEG `d0,`s0", uses, defs, null));
-                instrs.add(new AsmOPER("SUB `d0,`s0,1", defs, defs, null));
+                instrs.add(new AsmOPER("\t\tNEG\t`d0,`s0", uses, defs, null));
+                instrs.add(new AsmOPER("\t\tSUB\t`d0,`s0,1", defs, defs, null));
             }
         };
 

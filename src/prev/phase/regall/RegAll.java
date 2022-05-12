@@ -16,7 +16,7 @@ import prev.phase.livean.LiveAn;
 public class RegAll extends Phase {
 
 	/** Mapping of temporary variables to registers. */
-	public final HashMap<MemTemp, Integer> tempToReg = new HashMap<MemTemp, Integer>();
+	public static final HashMap<MemTemp, Integer> tempToReg = new HashMap<MemTemp, Integer>();
 
 	private final int nregs;
 
@@ -90,7 +90,7 @@ public class RegAll extends Phase {
 				if (inUse) {
 					// Insert a fetch before use
 					instrs.add(new AsmOPER(
-						"LDO `d0,`s0,`s1",
+						"\t\tLDO\t`d0,`s0,`s1",
 						new Vector<>(Arrays.asList(new MemTemp[]{ FP, offsetTemp })),
 						new Vector<>(Arrays.asList(new MemTemp[]{ newTemp })),
 						null
@@ -99,7 +99,7 @@ public class RegAll extends Phase {
 				} else if (inDef) {
 					// Insert a store after definition
 					instrs.add(new AsmOPER(
-						"STO `s0,`s1,`s2",
+						"\t\tSTO\t`s0,`s1,`s2",
 						new Vector<>(Arrays.asList(new MemTemp[]{
 							newTemp, FP, offsetTemp
 						})),
