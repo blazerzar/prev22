@@ -102,6 +102,16 @@ public class MemEvaluator extends AstFullVisitor<Object, MemEvaluator.Context> {
 		return null;
 	}
 
+	@Override
+	public Object visit(AstPfxExpr pfxExpr, Context context) {
+		if (pfxExpr.oper == AstPfxExpr.Oper.NEW || pfxExpr.oper == AstPfxExpr.Oper.DEL) {
+			FunctionContext funContext = (FunctionContext) context;
+			funContext.argsSize = 16 > funContext.argsSize ? 16 : funContext.argsSize;
+		}
+
+		return null;
+	}
+
 	// VARIABLE DECLARATIONS
 
 	@Override
