@@ -54,7 +54,7 @@ fun printBoard(positions : ^[8]int) : void = {
 fun queens(positions : ^[8]int, currentQueen : int) : int = {
     if currentQueen == N then {
         # All queens have been placed
-        if printed == false then {
+        if !printed then {
             printBoard(positions);
             printed = true;
         } else none;

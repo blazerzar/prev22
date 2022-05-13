@@ -1,14 +1,14 @@
-var name : ^char
+var status : bool
 
 fun main() : void = {
-	name = createChar();
-	name^ = 'A';
-	putChar((name^ : int));
+	status = true;
+	if !(3 < 5) then
+		putChar(('T' : int))
+	else
+		putChar(('F' : int));
 	putChar(10);
 	none;
 }
-
-fun createChar() : ^char = (new 8 : ^char)
 
 fun putChar(c : int) : void
 fun getChar() : int

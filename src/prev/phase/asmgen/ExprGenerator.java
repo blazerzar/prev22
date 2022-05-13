@@ -192,7 +192,7 @@ public class ExprGenerator implements ImcVisitor<MemTemp, Vector<AsmInstr>> {
             case NOT -> {
                 // First negate number to prevent overflow
                 instrs.add(new AsmOPER("\t\tNEG\t`d0,`s0", uses, defs, null));
-                instrs.add(new AsmOPER("\t\tSUB\t`d0,`s0,1", defs, defs, null));
+                instrs.add(new AsmOPER("\t\tADD\t`d0,`s0,1", defs, defs, null));
             }
         };
 
